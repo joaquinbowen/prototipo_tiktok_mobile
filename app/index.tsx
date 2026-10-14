@@ -1,6 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from '@/components/LinearGradient';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
 

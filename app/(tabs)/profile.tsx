@@ -17,10 +17,10 @@ const GRID_ITEM_WIDTH = Math.floor((width - 2) / 3);
 const GRID_ITEM_HEIGHT = Math.floor(GRID_ITEM_WIDTH * 1.35);
 
 const LIVE_BATTLES = [
-  { id: 'b1', title: 'Batalla Live vs @carlosgamer_col', result: 'Victoria 🏆', views: '18.4K', gifts: '840 regalos', gradient: ['#8B0000', '#FF4500'] },
-  { id: 'b2', title: 'Live Especial: Receta en Directo', result: 'Transmisión 🔴', views: '32.1K', gifts: '1.2K diamantes', gradient: ['#1A2A6C', '#B21F1F'] },
-  { id: 'b3', title: 'Batalla Live vs @mariafit_ec', result: 'Victoria 🏆', views: '12.8K', gifts: '620 regalos', gradient: ['#134E5E', '#71B280'] },
-  { id: 'b4', title: 'Preguntas y Respuestas con Fans', result: 'Transmisión 🔴', views: '15.4K', gifts: '450 diamantes', gradient: ['#4A00E0', '#8E2DE2'] },
+  { id: 'b1', title: 'Batalla Live vs @carlosgamer_col', result: 'Victoria', isWin: true, views: '18.4K', gifts: '840 regalos' },
+  { id: 'b2', title: 'Live Especial: Receta en Directo', result: 'Transmisión', isWin: false, views: '32.1K', gifts: '1.2K diamantes' },
+  { id: 'b3', title: 'Batalla Live vs @mariafit_ec', result: 'Victoria', isWin: true, views: '12.8K', gifts: '620 regalos' },
+  { id: 'b4', title: 'Preguntas y Respuestas con Fans', result: 'Transmisión', isWin: false, views: '15.4K', gifts: '450 diamantes' },
 ];
 
 export default function ProfileScreen() {
@@ -217,26 +217,30 @@ export default function ProfileScreen() {
           <View style={styles.livesContainer}>
             {LIVE_BATTLES.map(b => (
               <View key={b.id} style={styles.liveCard}>
-                <LinearGradient
-                  colors={b.gradient as [string, string]}
-                  style={styles.liveCardGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                >
-                  <View style={styles.liveCardHeader}>
-                    <View style={styles.liveResultBadge}>
-                      <Text style={styles.liveResultText}>{b.result}</Text>
-                    </View>
-                    <View style={styles.liveViewsBadge}>
-                      <Ionicons name="eye" size={12} color={COLORS.white} style={{ marginRight: 4 }} />
-                      <Text style={styles.liveViewsText}>{b.views}</Text>
-                    </View>
+                <View style={styles.liveCardHeader}>
+                  <View style={[styles.liveResultBadge, b.isWin ? styles.liveResultWin : styles.liveResultLive]}>
+                    <Ionicons
+                      name={b.isWin ? 'trophy' : 'radio'}
+                      size={11}
+                      color={b.isWin ? '#D4AF37' : '#FE2C55'}
+                      style={{ marginRight: 4 }}
+                    />
+                    <Text style={[styles.liveResultText, b.isWin ? styles.liveResultTextWin : styles.liveResultTextLive]}>
+                      {b.result}
+                    </Text>
                   </View>
-                  <View>
-                    <Text style={styles.liveCardTitle}>{b.title}</Text>
-                    <Text style={styles.liveCardGifts}>🎁 {b.gifts} acumulados</Text>
+                  <View style={styles.liveViewsBadge}>
+                    <Ionicons name="eye-outline" size={12} color={COLORS.subtext} style={{ marginRight: 4 }} />
+                    <Text style={styles.liveViewsText}>{b.views}</Text>
                   </View>
-                </LinearGradient>
+                </View>
+                <View style={{ marginTop: 10 }}>
+                  <Text style={styles.liveCardTitle}>{b.title}</Text>
+                  <View style={styles.liveGiftRow}>
+                    <Ionicons name="gift-outline" size={13} color="#D4AF37" style={{ marginRight: 4 }} />
+                    <Text style={styles.liveCardGifts}>{b.gifts} acumulados</Text>
+                  </View>
+                </View>
               </View>
             ))}
           </View>
@@ -559,15 +563,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   liveCard: {
+    backgroundColor: '#121212',
     borderRadius: RADIUS.md,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  liveCardGradient: {
     padding: SPACING.md,
-    minHeight: 100,
-    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   liveCardHeader: {
     flexDirection: 'row',
@@ -575,39 +575,57 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   liveResultBadge: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 4,
+    borderWidth: 0.5,
+  },
+  liveResultWin: {
+    backgroundColor: 'rgba(212,175,55,0.12)',
+    borderColor: 'rgba(212,175,55,0.3)',
+  },
+  liveResultLive: {
+    backgroundColor: 'rgba(254,44,85,0.12)',
+    borderColor: 'rgba(254,44,85,0.3)',
   },
   liveResultText: {
     fontSize: 10,
     fontWeight: FONT.weight.bold,
+  },
+  liveResultTextWin: {
     color: '#D4AF37',
+  },
+  liveResultTextLive: {
+    color: '#FE2C55',
   },
   liveViewsBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: '#1C1C1C',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 4,
   },
   liveViewsText: {
     fontSize: 11,
-    color: COLORS.white,
-    fontWeight: FONT.weight.semibold,
+    color: COLORS.subtext,
+    fontWeight: FONT.weight.medium,
   },
   liveCardTitle: {
     fontSize: FONT.size.sm,
     fontWeight: FONT.weight.bold,
     color: COLORS.white,
-    marginTop: 8,
+  },
+  liveGiftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
   },
   liveCardGifts: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 2,
+    color: COLORS.subtext,
   },
 
   emptyLikesView: {

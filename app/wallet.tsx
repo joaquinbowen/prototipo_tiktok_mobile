@@ -181,6 +181,24 @@ export default function WalletScreen() {
                           : styles.statusRechazado,
                       ]}
                     >
+                      <Ionicons
+                        name={
+                          item.status === 'aprobado'
+                            ? 'checkmark-circle'
+                            : item.status === 'pendiente'
+                            ? 'time'
+                            : 'close-circle'
+                        }
+                        size={11}
+                        color={
+                          item.status === 'aprobado'
+                            ? '#4ADE80'
+                            : item.status === 'pendiente'
+                            ? '#D4AF37'
+                            : '#EF4444'
+                        }
+                        style={{ marginRight: 4 }}
+                      />
                       <Text
                         style={[
                           styles.statusText,
@@ -191,7 +209,7 @@ export default function WalletScreen() {
                             : styles.statusTextRechazado,
                         ]}
                       >
-                        {item.status === 'aprobado' ? 'Entregado ✅' : item.status === 'pendiente' ? 'Pendiente ⏳' : 'Rechazado ❌'}
+                        {item.status === 'aprobado' ? 'Entregado' : item.status === 'pendiente' ? 'Pendiente' : 'Rechazado'}
                       </Text>
                     </View>
                   </View>
@@ -553,6 +571,8 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   statusPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,

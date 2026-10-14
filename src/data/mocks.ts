@@ -45,7 +45,7 @@ export const VIDEOS: Video[] = [
     id: 'v1',
     author: 'María Rodríguez',
     username: '@mariafit_ec',
-    description: 'Rutina de 10 minutos que cambió mi vida 💪 No necesitas gimnasio para estar en forma',
+    description: 'Rutina de 10 minutos que cambió mi vida · No necesitas gimnasio para estar en forma',
     hashtags: ['#fitness', '#workout', '#ecuador', '#saludable'],
     likes: 48200,
     comments: 1340,
@@ -59,7 +59,7 @@ export const VIDEOS: Video[] = [
     id: 'v2',
     author: 'Carlos Mendez',
     username: '@carlosgamer_col',
-    description: 'Cuando llevas 3 horas en ranked y esto pasa 💀 La lag no tiene perdón',
+    description: 'Cuando llevas 3 horas en ranked y esto pasa · La lag no tiene perdón',
     hashtags: ['#gaming', '#valorant', '#latam', '#gamer'],
     likes: 124500,
     comments: 8920,
@@ -73,7 +73,7 @@ export const VIDEOS: Video[] = [
     id: 'v3',
     author: 'Valentina Torres',
     username: '@vale.cocina',
-    description: 'Ceviche ecuatoriano en 5 minutos 🍋 Receta de mi abuela, patrimonio familiar',
+    description: 'Ceviche tradicional en 5 minutos · Receta de mi abuela, patrimonio familiar',
     hashtags: ['#cocina', '#ceviche', '#ecuador', '#recetas'],
     likes: 67800,
     comments: 2100,
@@ -87,7 +87,7 @@ export const VIDEOS: Video[] = [
     id: 'v4',
     author: 'Diego Ramos',
     username: '@diegocomedy',
-    description: 'POV: Cuando tu mamá dice "ahorita" en Ecuador 😂 Todo latino lo entiende',
+    description: 'POV: Cuando tu mamá dice "ahorita" en Ecuador · Todo latino lo entiende',
     hashtags: ['#comedia', '#latam', '#humor', '#pov'],
     likes: 203000,
     comments: 15600,
@@ -101,7 +101,7 @@ export const VIDEOS: Video[] = [
     id: 'v5',
     author: 'Sofia Guerrero',
     username: '@sofiarte_mx',
-    description: 'Pinté este cuadro en 60 segundos 🎨 Arte digital que nadie te enseña en la escuela',
+    description: 'Pinté este cuadro en 60 segundos · Arte digital que nadie te enseña en la escuela',
     hashtags: ['#arte', '#digitalart', '#mexico', '#creatividad'],
     likes: 89100,
     comments: 3240,
@@ -133,25 +133,25 @@ export const NOTIFICATIONS: Notification[] = [
 export const DM_USER = { name: 'Carlos Gaming', username: '@carlosgamer_col', avatarColor: '#25F4EE' };
 
 export const MESSAGES: Message[] = [
-  { id: 'm1', text: '¡Bro ese video estuvo brutal! 🔥', fromMe: false, time: '10:24' },
+  { id: 'm1', text: '¡Bro ese video estuvo brutal!', fromMe: false, time: '10:24' },
   { id: 'm2', text: 'jajaja gracias, le metí mucho trabajo', fromMe: true, time: '10:25' },
   { id: 'm3', text: '¿Cuántas horas tardaste en editarlo?', fromMe: false, time: '10:25' },
   { id: 'm4', text: 'Como 3 horas nada más, el truco está en los cortes rápidos', fromMe: true, time: '10:26' },
   { id: 'm5', text: '¿Qué app usas para editar?', fromMe: false, time: '10:27' },
-  { id: 'm6', text: 'CapCut, es gratis y hace maravillas 💪', fromMe: true, time: '10:27' },
+  { id: 'm6', text: 'CapCut, es gratis y hace maravillas', fromMe: true, time: '10:27' },
   { id: 'm7', text: 'A ver si me enseñas algún día', fromMe: false, time: '10:28' },
   { id: 'm8', text: '¡Claro! Hagamos una collab pronto', fromMe: true, time: '10:29' },
 ];
 
 // ─── Categories ───────────────────────────────────────────────────────────────
 
-export const CATEGORIES: Category[] = [
-  { id: 'c1', label: 'Comedia', emoji: '😂', color: '#FE2C55' },
-  { id: 'c2', label: 'Deportes', emoji: '⚽', color: '#25F4EE' },
-  { id: 'c3', label: 'Gaming', emoji: '🎮', color: '#A855F7' },
-  { id: 'c4', label: 'Música', emoji: '🎵', color: '#FFD700' },
-  { id: 'c5', label: 'Arte', emoji: '🎨', color: '#10B981' },
-  { id: 'c6', label: 'Cocina', emoji: '🍳', color: '#F97316' },
+export const CATEGORIES = [
+  { id: 'c1', label: 'Comedia', icon: 'happy-outline' as const, color: '#FE2C55' },
+  { id: 'c2', label: 'Deportes', icon: 'football-outline' as const, color: '#25F4EE' },
+  { id: 'c3', label: 'Gaming', icon: 'game-controller-outline' as const, color: '#A855F7' },
+  { id: 'c4', label: 'Música', icon: 'musical-notes-outline' as const, color: '#FFD700' },
+  { id: 'c5', label: 'Arte', icon: 'color-palette-outline' as const, color: '#10B981' },
+  { id: 'c6', label: 'Cocina', icon: 'restaurant-outline' as const, color: '#F97316' },
 ];
 
 // ─── Trending hashtags ────────────────────────────────────────────────────────
@@ -170,7 +170,7 @@ export const TRENDING = [
 export const MY_PROFILE = {
   name: 'Alex Creador',
   username: '@alex_creator_ec',
-  bio: 'Creador de contenido 🎬 | Ecuador 🇪🇨 | Entretenimiento & Lifestyle',
+  bio: 'Creador de contenido | Ecuador | Entretenimiento & Lifestyle',
   following: 1240,
   followers: 8500,
   likes: 45200,

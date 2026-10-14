@@ -234,14 +234,14 @@ export default function CreatorStudioScreen() {
                     onPress={() => router.push('/payment')}
                     activeOpacity={0.85}
                   >
-                    <Ionicons name="card-outline" size={18} color="#000000" style={{ marginRight: 6 }} />
-                    <Text style={styles.btnActivateText}>¡Activar Monetización ($9.99/mes)!</Text>
+                    <Ionicons name="card-outline" size={16} color="#000000" style={{ marginRight: 8 }} />
+                    <Text style={styles.btnActivateText}>Activar Monetización ($9.99/mes)</Text>
                   </TouchableOpacity>
                 ) : (
                   <View style={styles.btnLocked}>
-                    <Ionicons name="lock-closed" size={14} color={COLORS.muted} style={{ marginRight: 6 }} />
+                    <Ionicons name="lock-closed-outline" size={14} color={COLORS.muted} style={{ marginRight: 6 }} />
                     <Text style={styles.btnLockedText}>
-                      Monetización bloqueada (Requiere 10K seguidores y 100K vistas)
+                      Monetización bloqueada · Requiere 10K seguidores y 100K vistas
                     </Text>
                   </View>
                 )}

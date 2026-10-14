@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
 import { CATEGORIES } from '@/data/mocks';
@@ -46,7 +47,12 @@ export default function OnboardingScreen() {
                 onPress={() => toggle(cat.id)}
                 activeOpacity={0.75}
               >
-                <Text style={styles.chipEmoji}>{cat.emoji}</Text>
+                <Ionicons
+                  name={cat.icon as any}
+                  size={20}
+                  color={isSelected ? COLORS.white : COLORS.subtext}
+                  style={{ marginRight: 2 }}
+                />
                 <Text style={[styles.chipLabel, isSelected && styles.chipLabelSelected]}>
                   {cat.label}
                 </Text>

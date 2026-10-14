@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, SafeAreaView, ScrollView, FlatList,
+  StyleSheet, SafeAreaView, ScrollView,
 } from 'react-native';
-import { LinearGradient } from '@/components/LinearGradient';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
 import { TRENDING, VIDEOS } from '@/data/mocks';
@@ -24,7 +24,7 @@ export default function DiscoverScreen() {
       {/* Search bar */}
       <View style={styles.searchRow}>
         <View style={[styles.searchBox, focused && styles.searchBoxFocused]}>
-          <Text style={styles.searchIcon}>⊕</Text>
+          <Ionicons name="search-outline" size={18} color={COLORS.muted} style={{ marginRight: 6 }} />
           <TextInput
             style={styles.searchInput}
             placeholder="Busca videos, usuarios, hashtags..."
@@ -37,7 +37,7 @@ export default function DiscoverScreen() {
           />
           {query.length > 0 && (
             <TouchableOpacity onPress={() => setQuery('')}>
-              <Text style={styles.clearIcon}>✕</Text>
+              <Ionicons name="close-circle" size={16} color={COLORS.muted} />
             </TouchableOpacity>
           )}
         </View>
@@ -47,17 +47,15 @@ export default function DiscoverScreen() {
         {/* Trending hashtags */}
         <Text style={styles.sectionTitle}>Tendencias ahora</Text>
         <View style={styles.trendingGrid}>
-          {TRENDING.map((item, i) => (
-            <TouchableOpacity key={item.tag} activeOpacity={0.8}>
-              <LinearGradient
-                colors={[item.color + 'CC', item.color + '44']}
-                style={styles.trendCard}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <Text style={styles.trendTag}>{item.tag}</Text>
-                <Text style={styles.trendViews}>{item.views} videos</Text>
-              </LinearGradient>
+          {TRENDING.map(item => (
+            <TouchableOpacity key={item.tag} activeOpacity={0.8} style={styles.trendCard}>
+              <View style={styles.trendCardInner}>
+                <Ionicons name="trending-up" size={16} color={item.color} />
+                <View>
+                  <Text style={styles.trendTag}>{item.tag}</Text>
+                  <Text style={styles.trendViews}>{item.views} videos</Text>
+                </View>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
@@ -68,13 +66,13 @@ export default function DiscoverScreen() {
           {SUGGESTED.map(s => (
             <TouchableOpacity key={s.id} style={styles.suggestedRow} activeOpacity={0.7}>
               <View style={styles.searchIconWrap}>
-                <Text style={styles.suggestSearchIcon}>⊕</Text>
+                <Ionicons name="search" size={14} color={COLORS.muted} />
               </View>
               <View style={styles.suggestedInfo}>
                 <Text style={styles.suggestedQuery}>{s.query}</Text>
                 <Text style={styles.suggestedViews}>{s.views} vistas</Text>
               </View>
-              <Text style={styles.arrowIcon}>›</Text>
+              <Ionicons name="chevron-forward" size={16} color={COLORS.muted} />
             </TouchableOpacity>
           ))}
         </View>
@@ -84,20 +82,19 @@ export default function DiscoverScreen() {
         <View style={styles.videoGrid}>
           {VIDEOS.map(v => (
             <TouchableOpacity key={v.id} style={styles.videoThumb} activeOpacity={0.85}>
-              <LinearGradient
-                colors={v.gradientColors}
-                style={styles.videoGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <Text style={styles.videoThumbPlay}>▶</Text>
-              </LinearGradient>
-              <Text style={styles.videoThumbViews}>
-                {(v.likes / 1000).toFixed(0)}K ♥
-              </Text>
+              <View style={[styles.videoGradient, { backgroundColor: v.gradientColors[0] + 'AA' }]}>
+                <Ionicons name="play" size={18} color="rgba(255,255,255,0.7)" />
+              </View>
+              <View style={styles.videoThumbMeta}>
+                <Ionicons name="heart" size={10} color={COLORS.white} style={{ marginRight: 2 }} />
+                <Text style={styles.videoThumbViews}>
+                  {(v.likes / 1000).toFixed(0)}K
+                </Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -105,121 +102,135 @@ export default function DiscoverScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.black },
+
   searchRow: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
+    paddingTop: SPACING.sm,
     paddingBottom: SPACING.sm,
   },
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.md,
+    backgroundColor: '#141414',
+    borderRadius: RADIUS.sm,
     paddingHorizontal: SPACING.md,
-    gap: SPACING.sm,
+    paddingVertical: 10,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   searchBoxFocused: {
-    borderColor: COLORS.primary,
+    borderColor: 'rgba(255,255,255,0.25)',
   },
-  searchIcon: { fontSize: 18, color: COLORS.muted },
   searchInput: {
     flex: 1,
-    paddingVertical: 12,
-    fontSize: FONT.size.md,
+    fontSize: FONT.size.sm,
     color: COLORS.white,
   },
-  clearIcon: { fontSize: 14, color: COLORS.muted, padding: 4 },
-  content: { paddingBottom: 100 },
 
+  content: {
+    paddingHorizontal: SPACING.md,
+    paddingBottom: 100,
+  },
   sectionTitle: {
-    fontSize: FONT.size.lg,
-    fontWeight: FONT.weight.bold,
-    color: COLORS.white,
-    marginHorizontal: SPACING.md,
+    fontSize: 12,
+    fontWeight: FONT.weight.semibold,
+    color: COLORS.subtext,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
     marginTop: SPACING.lg,
     marginBottom: SPACING.sm,
   },
+
   trendingGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: SPACING.md,
     gap: SPACING.sm,
   },
   trendCard: {
-    borderRadius: RADIUS.md,
-    paddingVertical: 14,
-    paddingHorizontal: 18,
-    minWidth: 150,
+    width: '48.5%',
+    backgroundColor: '#111111',
+    borderRadius: RADIUS.sm,
+    padding: SPACING.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  trendCardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   trendTag: {
-    fontSize: FONT.size.md,
+    fontSize: FONT.size.sm,
     fontWeight: FONT.weight.bold,
     color: COLORS.white,
-    marginBottom: 2,
   },
   trendViews: {
     fontSize: FONT.size.xs,
-    color: 'rgba(255,255,255,0.7)',
+    color: COLORS.subtext,
+    marginTop: 2,
   },
+
   suggestedList: {
-    marginHorizontal: SPACING.md,
-    backgroundColor: COLORS.surface,
+    backgroundColor: '#111111',
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: 'rgba(255,255,255,0.08)',
     overflow: 'hidden',
   },
   suggestedRow: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: SPACING.md,
-    gap: SPACING.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+    gap: SPACING.md,
   },
   searchIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.card,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#1C1C1C',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  suggestSearchIcon: { fontSize: 16, color: COLORS.subtext },
   suggestedInfo: { flex: 1 },
   suggestedQuery: {
-    fontSize: FONT.size.md,
-    fontWeight: FONT.weight.medium,
+    fontSize: FONT.size.sm,
+    fontWeight: FONT.weight.semibold,
     color: COLORS.white,
   },
-  suggestedViews: { fontSize: FONT.size.xs, color: COLORS.muted },
-  arrowIcon: { fontSize: 20, color: COLORS.muted },
+  suggestedViews: {
+    fontSize: FONT.size.xs,
+    color: COLORS.subtext,
+    marginTop: 1,
+  },
+
   videoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: SPACING.md,
-    gap: 3,
+    gap: SPACING.xs,
   },
   videoThumb: {
-    width: '32.5%',
-    aspectRatio: 9 / 16,
+    width: '31.5%',
+    height: 140,
     borderRadius: RADIUS.sm,
     overflow: 'hidden',
+    position: 'relative',
   },
   videoGradient: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  videoThumbPlay: { fontSize: 22, color: 'rgba(255,255,255,0.6)' },
-  videoThumbViews: {
+  videoThumbMeta: {
     position: 'absolute',
-    bottom: 4,
-    left: 4,
-    fontSize: FONT.size.xs,
+    bottom: 4, left: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  videoThumbViews: {
+    fontSize: 10,
+    fontWeight: FONT.weight.bold,
     color: COLORS.white,
-    fontWeight: FONT.weight.semibold,
   },
 });

@@ -4,7 +4,6 @@ import {
   SafeAreaView, ScrollView, ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from '@/components/LinearGradient';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
@@ -35,7 +34,7 @@ function CardForm({ onPay }: { onPay: () => void }) {
     <View style={styles.form}>
       <Text style={styles.fieldLabel}>Número de tarjeta</Text>
       <View style={styles.fieldWrap}>
-        <Text style={styles.fieldIcon}>💳</Text>
+        <Ionicons name="card-outline" size={18} color={COLORS.muted} style={{ marginRight: 8 }} />
         <TextInput
           style={styles.fieldInput}
           value={cardNum}
@@ -52,7 +51,7 @@ function CardForm({ onPay }: { onPay: () => void }) {
           <Text style={styles.fieldLabel}>Vencimiento</Text>
           <View style={styles.fieldWrap}>
             <TextInput
-              style={[styles.fieldInput, { paddingLeft: SPACING.md }]}
+              style={styles.fieldInput}
               value={expiry}
               onChangeText={v => setExpiry(formatExpiry(v))}
               placeholder="MM/AA"
@@ -66,7 +65,7 @@ function CardForm({ onPay }: { onPay: () => void }) {
           <Text style={styles.fieldLabel}>CVV</Text>
           <View style={styles.fieldWrap}>
             <TextInput
-              style={[styles.fieldInput, { paddingLeft: SPACING.md }]}
+              style={styles.fieldInput}
               value={cvv}
               onChangeText={v => setCvv(v.replace(/\D/g, '').slice(0, 3))}
               placeholder="•••"
@@ -80,25 +79,19 @@ function CardForm({ onPay }: { onPay: () => void }) {
       </View>
 
       <TouchableOpacity
-        style={[styles.payBtn, !isValid && styles.payBtnDisabled]}
+        style={[styles.payBtnSolid, isValid ? styles.payBtnSolidActive : styles.payBtnSolidDisabled]}
         onPress={onPay}
         disabled={!isValid}
         activeOpacity={0.85}
       >
-        <LinearGradient
-          colors={isValid ? [COLORS.primary, '#CC0033'] : [COLORS.surface, COLORS.surface]}
-          style={styles.payBtnGradient}
-          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-        >
-          <Text style={[styles.payBtnText, !isValid && styles.payBtnTextDisabled]}>
-            Pagar $9.99/mes
-          </Text>
-        </LinearGradient>
+        <Text style={[styles.payBtnText, !isValid && styles.payBtnTextDisabled]}>
+          Pagar $9.99/mes
+        </Text>
       </TouchableOpacity>
 
       <View style={styles.securityRow}>
-        <Text style={styles.securityIcon}>🔒</Text>
-        <Text style={styles.securityText}>Pago seguro con Stripe · SSL encriptado</Text>
+        <Ionicons name="shield-checkmark-outline" size={15} color={COLORS.muted} />
+        <Text style={styles.securityText}>Pago seguro con Stripe · SSL 256-bit encriptado</Text>
       </View>
     </View>
   );
@@ -107,7 +100,7 @@ function CardForm({ onPay }: { onPay: () => void }) {
 function CryptoForm({ onPay }: { onPay: () => void }) {
   return (
     <View style={styles.form}>
-      <Text style={styles.cryptoHint}>Escanea el código QR con Binance Pay</Text>
+      <Text style={styles.cryptoHint}>Escanea el código QR desde tu app Binance</Text>
 
       {/* Simulated QR code */}
       <View style={styles.qrWrapper}>
@@ -119,7 +112,6 @@ function CryptoForm({ onPay }: { onPay: () => void }) {
                 key={i}
                 style={[
                   styles.qrCell,
-                  // Corner markers + random inner pattern
                   (i < 7 || (i >= 14 && i < 21 && i % 7 < 3) ||
                     (i >= 42) || Math.random() > 0.55) && styles.qrCellFilled,
                 ]}
@@ -127,27 +119,22 @@ function CryptoForm({ onPay }: { onPay: () => void }) {
             ))}
           </View>
           <View style={styles.qrLogo}>
-            <Text style={styles.qrLogoText}>₿</Text>
+            <Ionicons name="logo-bitcoin" size={16} color="#000000" />
           </View>
         </View>
         <Text style={styles.qrAmount}>$9.99 USDT</Text>
         <Text style={styles.qrExpiry}>Expira en 10:00 min</Text>
       </View>
 
-      <TouchableOpacity style={styles.payBtn} onPress={onPay} activeOpacity={0.85}>
-        <LinearGradient
-          colors={[COLORS.gold, '#FF8C00']}
-          style={styles.payBtnGradient}
-          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-        >
-          <Text style={[styles.payBtnText, { color: COLORS.black }]}>
-            ✓ Ya realicé el pago
-          </Text>
-        </LinearGradient>
+      <TouchableOpacity style={styles.payBtnCrypto} onPress={onPay} activeOpacity={0.85}>
+        <Ionicons name="checkmark" size={18} color="#000000" style={{ marginRight: 6 }} />
+        <Text style={styles.payBtnCryptoText}>
+          Confirmar Pago Realizado
+        </Text>
       </TouchableOpacity>
 
       <View style={styles.securityRow}>
-        <Text style={styles.securityIcon}>🔒</Text>
+        <Ionicons name="shield-checkmark-outline" size={15} color={COLORS.muted} />
         <Text style={styles.securityText}>Verificado por Binance Pay · USDT / BNB</Text>
       </View>
     </View>
@@ -158,30 +145,25 @@ function SuccessView({ method, onContinue }: { method: Tab; onContinue: () => vo
   return (
     <View style={styles.successView}>
       <ConfettiEffect />
-      <View style={styles.successIcon}>
-        <Text style={styles.successEmoji}>✅</Text>
+      <View style={styles.successIconCircle}>
+        <Ionicons name="checkmark-circle" size={54} color="#4ADE80" />
       </View>
       <Text style={styles.successTitle}>
         {method === 'card' ? 'Pago Exitoso' : 'Pago Crypto Confirmado'}
       </Text>
       <Text style={styles.successSubtitle}>
         {method === 'card'
-          ? 'Tu suscripción de $9.99/mes está activa.'
+          ? 'Tu suscripción mensual de $9.99 USD ha sido activada correctamente.'
           : 'Tu pago en USDT fue verificado por Binance Pay.'}
       </Text>
       <Text style={styles.successSub2}>
-        Bienvenido al programa de creadores de Viraly 🎉
+        Bienvenido al programa de creadores de Viraly.
       </Text>
-      <TouchableOpacity style={styles.continueBtn} onPress={onContinue} activeOpacity={0.85}>
-        <LinearGradient
-          colors={[COLORS.gold, '#FF8C00']}
-          style={styles.payBtnGradient}
-          start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-        >
-          <Text style={[styles.payBtnText, { color: COLORS.black }]}>
-            Ver mis Ganancias →
-          </Text>
-        </LinearGradient>
+      <TouchableOpacity style={styles.continueBtnSolid} onPress={onContinue} activeOpacity={0.85}>
+        <Text style={styles.continueBtnText}>
+          Continuar a Creator Studio
+        </Text>
+        <Ionicons name="arrow-forward" size={16} color="#000000" style={{ marginLeft: 6 }} />
       </TouchableOpacity>
     </View>
   );
@@ -197,7 +179,7 @@ export default function PaymentScreen() {
     setTimeout(() => {
       setPaid();
       setStage('success');
-    }, 2200);
+    }, 1800);
   }
 
   function handleContinue() {
@@ -217,54 +199,64 @@ export default function PaymentScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Ionicons name="chevron-back" size={26} color={COLORS.white} />
+          <Ionicons name="chevron-back" size={24} color={COLORS.white} />
         </TouchableOpacity>
         <Text style={styles.title}>Activar Monetización</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
-        {/* Price hero */}
-        <LinearGradient
-          colors={[COLORS.gold + '22', COLORS.primary + '11']}
-          style={styles.priceHero}
-        >
-          <Text style={styles.priceLabel}>Suscripción mensual</Text>
+        {/* Solid Dark Price hero */}
+        <View style={styles.priceHeroSolid}>
+          <Text style={styles.priceLabel}>Suscripción mensual de creador</Text>
           <Text style={styles.priceAmount}>$9.99</Text>
-          <Text style={styles.priceSub}>USD / mes · cancela cuando quieras</Text>
-        </LinearGradient>
-
-        {/* Tabs */}
-        <View style={styles.tabs}>
-          {[
-            { key: 'card' as Tab, label: '💳 Tarjeta' },
-            { key: 'crypto' as Tab, label: '₿ Crypto' },
-          ].map(t => (
-            <TouchableOpacity
-              key={t.key}
-              style={[styles.tabBtn, tab === t.key && styles.tabBtnActive]}
-              onPress={() => setTab(t.key)}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.tabText, tab === t.key && styles.tabTextActive]}>
-                {t.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          <Text style={styles.priceSub}>USD / mes · cancela cuando quieras sin penalidad</Text>
         </View>
 
-        {/* Content */}
-        {stage === 'loading' ? (
-          <View style={styles.loadingView}>
-            <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={styles.loadingText}>
-              {tab === 'card' ? 'Procesando pago...' : 'Verificando transacción...'}
+        {/* Tab selection with vector icons */}
+        <View style={styles.tabs}>
+          <TouchableOpacity
+            style={[styles.tabBtn, tab === 'card' && styles.tabBtnActive]}
+            onPress={() => setTab('card')}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name="card-outline"
+              size={16}
+              color={tab === 'card' ? '#000000' : COLORS.subtext}
+              style={{ marginRight: 6 }}
+            />
+            <Text style={[styles.tabText, tab === 'card' && styles.tabTextActive]}>
+              Tarjeta
             </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tabBtn, tab === 'crypto' && styles.tabBtnActive]}
+            onPress={() => setTab('crypto')}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name="logo-bitcoin"
+              size={16}
+              color={tab === 'crypto' ? '#000000' : COLORS.subtext}
+              style={{ marginRight: 6 }}
+            />
+            <Text style={[styles.tabText, tab === 'crypto' && styles.tabTextActive]}>
+              Binance Pay
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Form area or loading spinner */}
+        {stage === 'loading' ? (
+          <View style={styles.loadingArea}>
+            <ActivityIndicator size="large" color="#D4AF37" />
+            <Text style={styles.loadingText}>Procesando pago seguro...</Text>
+            <Text style={styles.loadingSub}>Verificando credenciales con la pasarela</Text>
           </View>
         ) : (
-          tab === 'card'
-            ? <CardForm onPay={handlePay} />
-            : <CryptoForm onPay={handlePay} />
+          tab === 'card' ? <CardForm onPay={handlePay} /> : <CryptoForm onPay={handlePay} />
         )}
       </ScrollView>
     </SafeAreaView>
@@ -272,122 +264,178 @@ export default function PaymentScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.black },
+  container: { flex: 1, backgroundColor: '#000000' },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: 'rgba(255,255,255,0.08)',
   },
   backBtn: { padding: 4 },
-  backIcon: { fontSize: 28, color: COLORS.white, lineHeight: 32 },
-  title: { fontSize: FONT.size.lg, fontWeight: FONT.weight.bold, color: COLORS.white },
+  title: { fontSize: FONT.size.md, fontWeight: FONT.weight.bold, color: COLORS.white },
 
-  priceHero: {
-    alignItems: 'center',
-    paddingVertical: SPACING.xl,
-    marginHorizontal: SPACING.md,
-    marginTop: SPACING.lg,
+  priceHeroSolid: {
+    margin: SPACING.md,
+    padding: SPACING.lg,
     borderRadius: RADIUS.md,
+    alignItems: 'center',
+    backgroundColor: '#111111',
     borderWidth: 1,
-    borderColor: COLORS.gold + '44',
+    borderColor: 'rgba(212,175,55,0.3)',
+    gap: 4,
   },
-  priceLabel: { fontSize: FONT.size.sm, color: COLORS.subtext, marginBottom: SPACING.xs },
+  priceLabel: {
+    fontSize: FONT.size.xs,
+    color: COLORS.subtext,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
   priceAmount: {
-    fontSize: 52,
-    fontWeight: FONT.weight.black,
-    color: COLORS.gold,
-    lineHeight: 60,
+    fontSize: 40,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.white,
+    letterSpacing: -1,
+    marginVertical: 2,
   },
-  priceSub: { fontSize: FONT.size.sm, color: COLORS.muted, marginTop: SPACING.xs },
+  priceSub: {
+    fontSize: 11,
+    color: COLORS.subtext,
+  },
 
   tabs: {
     flexDirection: 'row',
     marginHorizontal: SPACING.md,
-    marginTop: SPACING.lg,
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.md,
-    padding: 4,
+    marginBottom: SPACING.md,
+    backgroundColor: '#111111',
+    borderRadius: RADIUS.sm,
+    padding: 3,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   tabBtn: {
     flex: 1,
-    paddingVertical: 10,
+    flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: RADIUS.sm,
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: RADIUS.sm - 2,
   },
-  tabBtnActive: { backgroundColor: COLORS.primary },
-  tabText: { fontSize: FONT.size.md, fontWeight: FONT.weight.semibold, color: COLORS.subtext },
-  tabTextActive: { color: COLORS.white },
+  tabBtnActive: {
+    backgroundColor: '#D4AF37',
+  },
+  tabText: {
+    fontSize: 12,
+    fontWeight: FONT.weight.semibold,
+    color: COLORS.subtext,
+  },
+  tabTextActive: {
+    color: '#000000',
+    fontWeight: FONT.weight.bold,
+  },
 
   form: {
     paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.lg,
-    gap: SPACING.sm,
+    gap: 12,
   },
   fieldLabel: {
-    fontSize: FONT.size.sm,
-    fontWeight: FONT.weight.semibold,
+    fontSize: 11,
+    fontWeight: FONT.weight.medium,
     color: COLORS.subtext,
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
     marginBottom: 4,
   },
   fieldWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.md,
+    backgroundColor: '#121212',
+    borderRadius: RADIUS.sm,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    paddingHorizontal: SPACING.md,
-    gap: SPACING.sm,
+    borderColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: 12,
   },
-  fieldIcon: { fontSize: 18 },
   fieldInput: {
     flex: 1,
-    paddingVertical: 14,
-    fontSize: FONT.size.md,
+    paddingVertical: 12,
+    fontSize: 14,
     color: COLORS.white,
   },
-  fieldRow: { flexDirection: 'row', gap: SPACING.sm },
+  fieldRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
 
-  payBtn: {
-    borderRadius: RADIUS.md,
-    overflow: 'hidden',
-    marginTop: SPACING.md,
+  // Flat solid buttons
+  payBtnSolid: {
+    borderRadius: RADIUS.sm,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6,
   },
-  payBtnDisabled: { opacity: 0.5 },
-  payBtnGradient: { paddingVertical: 16, alignItems: 'center' },
+  payBtnSolidActive: {
+    backgroundColor: '#D4AF37',
+  },
+  payBtnSolidDisabled: {
+    backgroundColor: '#1C1C1C',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.06)',
+  },
   payBtnText: {
-    fontSize: FONT.size.lg,
-    fontWeight: FONT.weight.black,
-    color: COLORS.white,
+    fontSize: 14,
+    fontWeight: FONT.weight.bold,
+    color: '#000000',
   },
-  payBtnTextDisabled: { color: COLORS.muted },
+  payBtnTextDisabled: {
+    color: COLORS.muted,
+  },
+
+  payBtnCrypto: {
+    backgroundColor: '#D4AF37',
+    borderRadius: RADIUS.sm,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 6,
+  },
+  payBtnCryptoText: {
+    fontSize: 14,
+    fontWeight: FONT.weight.bold,
+    color: '#000000',
+  },
 
   securityRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: SPACING.xs,
-    marginTop: SPACING.xs,
+    gap: 6,
+    paddingTop: 6,
   },
-  securityIcon: { fontSize: 13 },
-  securityText: { fontSize: FONT.size.xs, color: COLORS.muted },
+  securityText: {
+    fontSize: 11,
+    color: COLORS.muted,
+  },
 
+  // Crypto
   cryptoHint: {
-    fontSize: FONT.size.md,
+    fontSize: 12,
     color: COLORS.subtext,
     textAlign: 'center',
-    marginBottom: SPACING.md,
   },
-  qrWrapper: { alignItems: 'center', gap: SPACING.sm },
+  qrWrapper: {
+    alignItems: 'center',
+    paddingVertical: 12,
+    gap: 6,
+  },
   qrBox: {
-    width: 200, height: 200,
-    backgroundColor: COLORS.white,
+    width: 170,
+    height: 170,
+    backgroundColor: '#FFFFFF',
     borderRadius: RADIUS.md,
     padding: 12,
     alignItems: 'center',
@@ -395,71 +443,99 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   qrGrid: {
+    width: 140,
+    height: 140,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: 176, height: 176,
-    gap: 0,
+    gap: 2,
   },
   qrCell: {
-    width: '14.28%', height: 25,
-    backgroundColor: 'transparent',
+    width: 18,
+    height: 18,
+    borderRadius: 2,
+    backgroundColor: '#F0F0F0',
   },
-  qrCellFilled: { backgroundColor: '#1A1A1A' },
+  qrCellFilled: {
+    backgroundColor: '#000000',
+  },
   qrLogo: {
     position: 'absolute',
-    width: 40, height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.gold,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  qrLogoText: { fontSize: 20, fontWeight: FONT.weight.black },
-  qrAmount: { fontSize: FONT.size.xl, fontWeight: FONT.weight.black, color: COLORS.gold },
-  qrExpiry: { fontSize: FONT.size.sm, color: COLORS.muted },
-
-  loadingView: {
-    paddingVertical: SPACING.xxl * 2,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#D4AF37',
     alignItems: 'center',
-    gap: SPACING.lg,
+    justifyContent: 'center',
   },
-  loadingText: { fontSize: FONT.size.lg, color: COLORS.subtext },
+  qrAmount: {
+    fontSize: 18,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.white,
+    marginTop: 6,
+  },
+  qrExpiry: {
+    fontSize: 11,
+    color: COLORS.muted,
+  },
 
+  // Loading
+  loadingArea: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80,
+    gap: 12,
+  },
+  loadingText: {
+    fontSize: FONT.size.md,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.white,
+  },
+  loadingSub: {
+    fontSize: 11,
+    color: COLORS.subtext,
+  },
+
+  // Success
   successView: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: SPACING.xl,
-    gap: SPACING.lg,
+    gap: 8,
   },
-  successIcon: {
-    width: 96, height: 96,
-    borderRadius: 48,
-    backgroundColor: COLORS.success + '22',
-    alignItems: 'center', justifyContent: 'center',
-    borderWidth: 2, borderColor: COLORS.success + '44',
+  successIconCircle: {
+    marginBottom: 8,
   },
-  successEmoji: { fontSize: 48 },
   successTitle: {
-    fontSize: FONT.size.xxl,
-    fontWeight: FONT.weight.black,
+    fontSize: 22,
+    fontWeight: FONT.weight.bold,
     color: COLORS.white,
-    textAlign: 'center',
   },
   successSubtitle: {
-    fontSize: FONT.size.md,
+    fontSize: 13,
     color: COLORS.subtext,
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 18,
   },
   successSub2: {
-    fontSize: FONT.size.md,
-    color: COLORS.gold,
+    fontSize: 12,
+    color: '#D4AF37',
     textAlign: 'center',
-    fontWeight: FONT.weight.semibold,
+    marginBottom: 20,
+    marginTop: 4,
   },
-  continueBtn: {
-    width: '100%',
-    borderRadius: RADIUS.md,
-    overflow: 'hidden',
-    marginTop: SPACING.sm,
+  continueBtnSolid: {
+    backgroundColor: '#D4AF37',
+    borderRadius: RADIUS.sm,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  continueBtnText: {
+    fontSize: 14,
+    fontWeight: FONT.weight.bold,
+    color: '#000000',
   },
 });

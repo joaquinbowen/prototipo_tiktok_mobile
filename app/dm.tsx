@@ -4,6 +4,7 @@ import {
   StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
 import { MESSAGES, DM_USER } from '@/data/mocks';
@@ -38,7 +39,7 @@ export default function DMScreen() {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Text style={styles.backIcon}>‹</Text>
+            <Ionicons name="chevron-back" size={24} color={COLORS.white} />
           </TouchableOpacity>
           <View style={[styles.headerAvatar, { backgroundColor: DM_USER.avatarColor }]}>
             <Text style={styles.headerAvatarText}>C</Text>
@@ -47,8 +48,8 @@ export default function DMScreen() {
             <Text style={styles.headerName}>{DM_USER.name}</Text>
             <Text style={styles.headerUsername}>{DM_USER.username}</Text>
           </View>
-          <TouchableOpacity>
-            <Text style={styles.moreIcon}>⋯</Text>
+          <TouchableOpacity style={{ padding: 4 }}>
+            <Ionicons name="ellipsis-horizontal" size={20} color={COLORS.subtext} />
           </TouchableOpacity>
         </View>
 
@@ -75,7 +76,7 @@ export default function DMScreen() {
         {/* Input bar */}
         <View style={styles.inputBar}>
           <TouchableOpacity style={styles.mediaBtn}>
-            <Text style={styles.mediaBtnIcon}>+</Text>
+            <Ionicons name="add" size={22} color={COLORS.subtext} />
           </TouchableOpacity>
           <TextInput
             style={styles.input}
@@ -88,11 +89,11 @@ export default function DMScreen() {
           />
           {input.trim().length > 0 ? (
             <TouchableOpacity style={styles.sendBtn} onPress={handleSend}>
-              <Text style={styles.sendBtnText}>↑</Text>
+              <Ionicons name="arrow-up" size={18} color={COLORS.white} />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.likeBtn}>
-              <Text style={styles.likeBtnText}>♥</Text>
+              <Ionicons name="heart" size={20} color={COLORS.primary} />
             </TouchableOpacity>
           )}
         </View>
