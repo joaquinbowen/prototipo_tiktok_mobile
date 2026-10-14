@@ -84,10 +84,12 @@ export function VideoSidebar({
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    right: SPACING.md,
-    bottom: 24,
+    right: 8,
+    bottom: 20,
+    width: 60,
     alignItems: 'center',
-    gap: SPACING.md,
+    gap: 12,
+    zIndex: 20,
   },
   avatarWrapper: {
     position: 'relative',

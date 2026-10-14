@@ -4,33 +4,11 @@ import {
   SafeAreaView, ScrollView, Animated, Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from '@/components/LinearGradient';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
 import { ProgressBar } from '@/components/ProgressBar';
-import { MY_PROFILE } from '@/data/mocks';
 import { useMonetization } from '@/context/MonetizationContext';
-
-const INITIAL_STATS = [
-  { label: 'Visualizaciones hoy', value: '3,240', icon: 'eye-outline', color: COLORS.accent },
-  { label: 'Nuevos seguidores', value: '+124', icon: 'person-add-outline', color: COLORS.primary },
-  { label: 'Tiempo promedio', value: '48s', icon: 'time-outline', color: COLORS.gold },
-  { label: 'Alcance', value: '12.4K', icon: 'radio-outline', color: '#A855F7' },
-];
-
-const MATURE_STATS = [
-  { label: 'RPM Promedio', value: '$0.85', icon: 'trending-up-outline', color: COLORS.accent },
-  { label: 'Estimado mensual', value: '$348.50', icon: 'cash-outline', color: COLORS.gold },
-  { label: 'Reproducciones', value: '410.2K', icon: 'play-outline', color: COLORS.primary },
-  { label: 'Retención media', value: '52s', icon: 'stopwatch-outline', color: '#A855F7' },
-];
-
-const TOP_MONETIZED_VIDEOS = [
-  { id: '1', title: 'Ceviche tradicional fácil en 5 min', views: '210K', earned: '$17.85', time: 'hace 2 días' },
-  { id: '2', title: 'Rutina funcional express en casa', views: '145K', earned: '$12.30', time: 'hace 4 días' },
-  { id: '3', title: 'Setup minimalista de trabajo 2026', views: '89K', earned: '$7.56', time: 'hace 1 semana' },
-];
 
 export default function CreatorStudioScreen() {
   const {
@@ -39,6 +17,8 @@ export default function CreatorStudioScreen() {
     isPaid,
     isMature,
     balance,
+    revenueStreams,
+    profile,
     simulateGoalsComplete,
     simulateMatureTrajectory,
     resetDemo,
@@ -52,7 +32,7 @@ export default function CreatorStudioScreen() {
   useEffect(() => {
     if (isMature) {
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.05, duration: 150, useNativeDriver: true }),
+        Animated.timing(pulseAnim, { toValue: 1.04, duration: 150, useNativeDriver: true }),
         Animated.timing(pulseAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
       ]).start();
     }
@@ -69,18 +49,18 @@ export default function CreatorStudioScreen() {
   function handleSimulateStep1() {
     setAnimateGoals(true);
     simulateGoalsComplete();
-    Alert.alert('¡Meta Alcanzada!', 'Has cumplido 10K seguidores y 100K reproducciones. Ahora puedes proceder al pago de activación.');
+    Alert.alert('¡Metas Alcanzadas!', 'Has completado 10,000 seguidores y 100,000 visualizaciones. El botón de activación está listo.');
   }
 
   function handleSimulateStep2() {
     simulateMatureTrajectory();
-    Alert.alert('¡Trayectoria Simulada!', 'Tus nuevos videos han sumado miles de reproducciones. Tu billetera y estadísticas completas de ingresos están activas.');
+    Alert.alert('¡Trayectoria Simulada!', 'Se han calculado ingresos por videos, batallas y transmisiones en vivo.');
   }
 
   function handleConfirmReset() {
     Alert.alert(
       'Reiniciar Demostración',
-      '¿Deseas restaurar la cuenta al estado inicial (sin cumplir metas ni pago)?',
+      '¿Deseas volver la cuenta al estado inicial?',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -95,201 +75,173 @@ export default function CreatorStudioScreen() {
     );
   }
 
-  const followersCurrent = goalsCompleted ? MY_PROFILE.goalsTarget.followers : MY_PROFILE.goalsCurrent.followers;
-  const viewsCurrent = goalsCompleted ? MY_PROFILE.goalsTarget.views : MY_PROFILE.goalsCurrent.views;
+  const followersCurrent = goalsCompleted ? 10000 : 8500;
+  const viewsCurrent = goalsCompleted ? 100000 : 85000;
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
-          <Ionicons name="chevron-back" size={26} color={COLORS.white} />
+          <Ionicons name="chevron-back" size={24} color={COLORS.white} />
         </TouchableOpacity>
         <Text style={styles.title}>Creator Studio</Text>
         <TouchableOpacity onPress={handleConfirmReset} style={styles.headerBtn} activeOpacity={0.7}>
-          <Ionicons name="refresh" size={22} color={COLORS.subtext} />
+          <Ionicons name="refresh" size={20} color={COLORS.subtext} />
         </TouchableOpacity>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
 
-        {/* Greeting Card */}
-        <View style={styles.greeting}>
-          <LinearGradient
-            colors={
-              isMature
-                ? ['rgba(255,215,0,0.18)', 'rgba(0,242,254,0.10)']
+        {/* Unified Dark Creator Header Card */}
+        <View style={styles.profileHeaderCard}>
+          <View style={styles.profileAvatar}>
+            <Text style={styles.profileAvatarText}>{profile.name.charAt(0)}</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <View style={styles.profileNameRow}>
+              <Text style={styles.profileName}>{profile.name}</Text>
+              {isPaid && (
+                <View style={styles.verifiedPill}>
+                  <Ionicons name="checkmark-circle" size={12} color="#D4AF37" />
+                  <Text style={styles.verifiedPillText}>PRO</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.profileCategory}>{profile.category}</Text>
+            <Text style={styles.profileStatus}>
+              {isMature
+                ? 'Monetización completa · Vistas, Lives y Batallas'
                 : isPaid
-                ? ['rgba(0,242,254,0.15)', 'rgba(254,44,85,0.08)']
+                ? 'Monetización aprobada · Comienza a generar'
                 : goalsCompleted
-                ? ['rgba(255,215,0,0.2)', 'rgba(254,44,85,0.1)']
-                : ['rgba(254,44,85,0.15)', 'rgba(0,242,254,0.08)']
-            }
-            style={styles.greetingCard}
-          >
-            <View style={styles.greetingIconWrap}>
-              <Ionicons
-                name={isMature ? "trophy" : isPaid ? "checkmark-circle" : goalsCompleted ? "star" : "flash"}
-                size={26}
-                color={isMature ? COLORS.gold : isPaid ? COLORS.accent : COLORS.primary}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.greetingTitle}>Hola, {MY_PROFILE.name.split(' ')[0]}</Text>
-              <Text style={styles.greetingSubtitle}>
-                {isMature
-                  ? 'Cuenta verificada · Generando ingresos en vivo'
-                  : isPaid
-                  ? '¡Monetización aprobada! Sube videos para cobrar'
-                  : goalsCompleted
-                  ? '¡Metas cumplidas! Activa tu monetización'
-                  : 'Estás cerca de monetizar tu contenido'}
-              </Text>
-            </View>
-          </LinearGradient>
+                ? 'Metas cumplidas · Pendiente de activación'
+                : 'Metas en progreso para monetizar'}
+            </Text>
+          </View>
         </View>
 
         {/* ============================================================== */}
-        {/* STAGE 4: MATURE CREATOR WALLET HERO & DETAILED ANALYTICS       */}
+        {/* HERO WALLET CARD (WHEN MATURE)                                 */}
         {/* ============================================================== */}
         {isMature && (
           <View style={styles.section}>
             <View style={styles.walletHeroCard}>
-              <LinearGradient
-                colors={['#1F1705', '#0D0D0D']}
-                style={styles.walletHeroGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <View style={styles.liveBadgeRow}>
-                  <View style={styles.pulseDot} />
-                  <Text style={styles.liveBadgeText}>GENERANDO EN TIEMPO REAL</Text>
+              <View style={styles.walletHeaderRow}>
+                <View style={styles.liveIndicator}>
+                  <View style={styles.liveDot} />
+                  <Text style={styles.liveText}>GENERANDO EN TIEMPO REAL</Text>
                 </View>
-
-                <Text style={styles.walletLabel}>Saldo acumulado disponible</Text>
-                <Animated.Text style={[styles.walletAmount, { transform: [{ scale: pulseAnim }] }]}>
-                  ${balance.toFixed(2)}
-                  <Text style={styles.walletCurrency}> USD</Text>
-                </Animated.Text>
-
-                <Text style={styles.walletRateText}>
-                  + $0.01 por cada 1,000 visualizaciones en LATAM
-                </Text>
-
-                <TouchableOpacity
-                  style={styles.btnWalletAction}
-                  onPress={() => router.push('/wallet')}
-                  activeOpacity={0.85}
-                >
-                  <LinearGradient
-                    colors={[COLORS.gold, '#FF8C00']}
-                    style={styles.btnWalletGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                  >
-                    <Ionicons name="wallet-outline" size={18} color={COLORS.black} style={{ marginRight: 6 }} />
-                    <Text style={styles.btnWalletActionText}>Ver Billetera y Solicitar Retiro</Text>
-                  </LinearGradient>
+                <TouchableOpacity onPress={() => router.push('/wallet')} activeOpacity={0.7}>
+                  <Text style={styles.walletDetailLink}>Historial y retiros ›</Text>
                 </TouchableOpacity>
-              </LinearGradient>
+              </View>
+
+              <Text style={styles.walletLabel}>Saldo disponible en billetera</Text>
+              <Animated.Text style={[styles.walletAmount, { transform: [{ scale: pulseAnim }] }]}>
+                ${balance.toFixed(2)}
+                <Text style={styles.walletCurrency}> USD</Text>
+              </Animated.Text>
+
+              {/* Multi-stream revenue summary badges */}
+              <View style={styles.streamGrid}>
+                <View style={styles.streamItem}>
+                  <Ionicons name="videocam-outline" size={15} color="#D4AF37" />
+                  <Text style={styles.streamLabel}>Videos</Text>
+                  <Text style={styles.streamVal}>${revenueStreams.views.toFixed(2)}</Text>
+                </View>
+                <View style={styles.streamItem}>
+                  <Ionicons name="gift-outline" size={15} color="#D4AF37" />
+                  <Text style={styles.streamLabel}>Regalos Live</Text>
+                  <Text style={styles.streamVal}>${revenueStreams.liveGifts.toFixed(2)}</Text>
+                </View>
+                <View style={styles.streamItem}>
+                  <Ionicons name="flame-outline" size={15} color="#D4AF37" />
+                  <Text style={styles.streamLabel}>Batallas</Text>
+                  <Text style={styles.streamVal}>${revenueStreams.liveBattles.toFixed(2)}</Text>
+                </View>
+                <View style={styles.streamItem}>
+                  <Ionicons name="people-outline" size={15} color="#D4AF37" />
+                  <Text style={styles.streamLabel}>Suscripciones</Text>
+                  <Text style={styles.streamVal}>${revenueStreams.subscriptions.toFixed(2)}</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.btnWithdrawAction}
+                onPress={() => router.push('/wallet')}
+                activeOpacity={0.85}
+              >
+                <Ionicons name="wallet-outline" size={16} color="#000000" style={{ marginRight: 6 }} />
+                <Text style={styles.btnWithdrawActionText}>Gestionar Billetera y Retirar Fondos</Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
 
         {/* ============================================================== */}
-        {/* STAGE 3: FRESH PAID CREATOR - STEP 2 SIMULATION CALLOUT         */}
+        {/* STEP 2 SIMULATION CALLOUT (STAGE: paid_fresh)                  */}
         {/* ============================================================== */}
         {stage === 'paid_fresh' && (
           <View style={styles.section}>
-            <View style={styles.stepBox}>
-              <LinearGradient
-                colors={['rgba(255,215,0,0.12)', 'rgba(20,20,20,0.9)']}
-                style={styles.stepBoxGradient}
+            <View style={styles.demoBox}>
+              <View style={styles.demoTag}>
+                <Text style={styles.demoTagText}>PASO 2 DE DEMOSTRACIÓN</Text>
+              </View>
+              <Text style={styles.demoTitle}>Simula el tráfico, transmisiones y batallas</Text>
+              <Text style={styles.demoDesc}>
+                Tu suscripción está confirmada. Simula transmisiones en vivo, batallas ganadas y miles de reproducciones para activar la billetera y métricas de ingresos.
+              </Text>
+              <TouchableOpacity
+                style={styles.btnSimulateAction}
+                onPress={handleSimulateStep2}
+                activeOpacity={0.85}
               >
-                <View style={styles.stepHeaderRow}>
-                  <View style={styles.stepPill}>
-                    <Text style={styles.stepPillText}>DEMO · PASO 2</Text>
-                  </View>
-                  <Text style={styles.stepStatusText}>Suscripción Activa ($9.99/mes)</Text>
-                </View>
-
-                <Text style={styles.stepTitle}>Simula el tráfico y trayectoria</Text>
-                <Text style={styles.stepDesc}>
-                  Tu cuenta ya tiene la monetización habilitada. Presiona el botón para simular la publicación de nuevos videos, incremento de vistas y desglose de ganancias.
-                </Text>
-
-                <TouchableOpacity
-                  style={styles.btnStep2}
-                  onPress={handleSimulateStep2}
-                  activeOpacity={0.85}
-                >
-                  <LinearGradient
-                    colors={[COLORS.gold, '#E5A00D']}
-                    style={styles.btnStepGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                  >
-                    <Ionicons name="trending-up" size={20} color={COLORS.black} style={{ marginRight: 6 }} />
-                    <Text style={styles.btnStep2Text}>📈 Simular Trayectoria y Ganancias</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </LinearGradient>
+                <Ionicons name="trending-up" size={16} color="#000000" style={{ marginRight: 6 }} />
+                <Text style={styles.btnSimulateActionText}>Simular Trayectoria y Ganancias</Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
 
         {/* ============================================================== */}
-        {/* STAGE 1 & 2: GOALS PROGRESS CARD                               */}
+        {/* GOALS PROGRESS (STAGE: initial & goals_met)                    */}
         {/* ============================================================== */}
-        {(!isPaid) && (
+        {!isPaid && (
           <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Progreso hacia monetización</Text>
-              <Text style={styles.sectionSubtitle}>
-                {goalsCompleted ? 'Requisitos cumplidos (100%)' : '85% completado'}
-              </Text>
-            </View>
-
-            <View style={styles.progressCard}>
+            <Text style={styles.sectionTitle}>Progreso hacia monetización</Text>
+            <View style={styles.darkCard}>
               <ProgressBar
                 label="Seguidores"
                 current={followersCurrent}
-                total={MY_PROFILE.goalsTarget.followers}
-                color={COLORS.primary}
+                total={10000}
+                color="#D4AF37"
                 animate={animateGoals}
               />
-              <View style={styles.divider} />
+              <View style={styles.cardDivider} />
               <ProgressBar
                 label="Visualizaciones"
                 current={viewsCurrent}
-                total={MY_PROFILE.goalsTarget.views}
-                color={COLORS.accent}
+                total={100000}
+                color="#D4AF37"
                 animate={animateGoals}
               />
 
-              {/* Unlock or Locked CTA */}
-              <View style={styles.btnWrapper}>
+              <View style={{ marginTop: 12 }}>
                 {goalsCompleted ? (
                   <TouchableOpacity
-                    style={styles.btnUnlocked}
+                    style={styles.btnActivate}
                     onPress={() => router.push('/payment')}
                     activeOpacity={0.85}
                   >
-                    <LinearGradient
-                      colors={[COLORS.gold, '#FF8C00']}
-                      style={styles.btnGradient}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                    >
-                      <Ionicons name="card-outline" size={20} color={COLORS.black} style={{ marginRight: 8 }} />
-                      <Text style={styles.btnUnlockedText}>🎉 ¡Activa tu Monetización!</Text>
-                    </LinearGradient>
+                    <Ionicons name="card-outline" size={18} color="#000000" style={{ marginRight: 6 }} />
+                    <Text style={styles.btnActivateText}>¡Activar Monetización ($9.99/mes)!</Text>
                   </TouchableOpacity>
                 ) : (
                   <View style={styles.btnLocked}>
-                    <Ionicons name="lock-closed" size={16} color={COLORS.muted} style={{ marginRight: 6 }} />
+                    <Ionicons name="lock-closed" size={14} color={COLORS.muted} style={{ marginRight: 6 }} />
                     <Text style={styles.btnLockedText}>
-                      Activar Monetización (Requiere cumplir metas)
+                      Monetización bloqueada (Requiere 10K seguidores y 100K vistas)
                     </Text>
                   </View>
                 )}
@@ -299,106 +251,107 @@ export default function CreatorStudioScreen() {
         )}
 
         {/* ============================================================== */}
-        {/* STAGE 1 SIMULATION BOX: STEP 1 TO REACH GOAL                   */}
+        {/* STEP 1 SIMULATION CALLOUT (STAGE: initial)                     */}
         {/* ============================================================== */}
         {stage === 'initial' && (
           <View style={styles.section}>
-            <View style={styles.stepBox}>
-              <LinearGradient
-                colors={['rgba(0,242,254,0.12)', 'rgba(20,20,20,0.9)']}
-                style={styles.stepBoxGradient}
+            <View style={styles.demoBox}>
+              <View style={styles.demoTag}>
+                <Text style={styles.demoTagText}>PASO 1 DE DEMOSTRACIÓN</Text>
+              </View>
+              <Text style={styles.demoTitle}>Simula el alcance de metas de creador</Text>
+              <Text style={styles.demoDesc}>
+                Aumenta automáticamente los seguidores y reproducciones al 100% para habilitar la pasarela de pago.
+              </Text>
+              <TouchableOpacity
+                style={styles.btnSimulateAction}
+                onPress={handleSimulateStep1}
+                activeOpacity={0.85}
               >
-                <View style={styles.stepHeaderRow}>
-                  <View style={[styles.stepPill, { backgroundColor: 'rgba(0,242,254,0.2)' }]}>
-                    <Text style={[styles.stepPillText, { color: COLORS.accent }]}>DEMO · PASO 1</Text>
-                  </View>
-                  <Text style={styles.stepStatusText}>Usuario sin meta</Text>
-                </View>
-
-                <Text style={styles.stepTitle}>Simula el cumplimiento de metas</Text>
-                <Text style={styles.stepDesc}>
-                  Haz que las barras de seguidores y visualizaciones suban al 100% para habilitar el botón de pago y continuar la presentación.
-                </Text>
-
-                <TouchableOpacity
-                  style={styles.btnStep1}
-                  onPress={handleSimulateStep1}
-                  activeOpacity={0.85}
-                >
-                  <LinearGradient
-                    colors={[COLORS.primary, '#E02047']}
-                    style={styles.btnStepGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                  >
-                    <Ionicons name="flash" size={18} color={COLORS.white} style={{ marginRight: 6 }} />
-                    <Text style={styles.btnStep1Text}>⚡ Simular Meta Cumplida (Paso 1)</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </LinearGradient>
+                <Ionicons name="flash" size={16} color="#000000" style={{ marginRight: 6 }} />
+                <Text style={styles.btnSimulateActionText}>Simular Metas Cumplidas (100%)</Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
 
         {/* ============================================================== */}
-        {/* ANALYTICS SECTION (MATURE vs INITIAL)                          */}
+        {/* STATS OVERVIEW (ALIGNED WITH PLATFORM KPIs)                    */}
         {/* ============================================================== */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            {isMature ? 'Analíticas de Rendimiento y Ganancias' : 'Estadísticas del Canal'}
+            {isMature ? 'Métricas de Creador y Audiencia' : 'Estadísticas del Canal'}
           </Text>
-          <View style={styles.statsGrid}>
-            {(isMature ? MATURE_STATS : INITIAL_STATS).map(stat => (
-              <View key={stat.label} style={styles.statCard}>
-                <Ionicons name={stat.icon as any} size={22} color={stat.color} />
-                <Text style={[styles.statValue, { color: stat.color }]}>{stat.value}</Text>
-                <Text style={styles.statLabel}>{stat.label}</Text>
-              </View>
-            ))}
+          <View style={styles.kpiGrid}>
+            <View style={styles.kpiCard}>
+              <Text style={styles.kpiLabel}>{isMature ? 'RPM Promedio' : 'Vistas hoy'}</Text>
+              <Text style={styles.kpiValue}>{isMature ? '$0.85 USD' : '3,240'}</Text>
+              <Text style={styles.kpiSub}>por cada 1,000 reproducciones</Text>
+            </View>
+            <View style={styles.kpiCard}>
+              <Text style={styles.kpiLabel}>{isMature ? 'Estimado Mensual' : 'Nuevos fans'}</Text>
+              <Text style={styles.kpiValue}>{isMature ? '$348.50' : '+124'}</Text>
+              <Text style={styles.kpiSub}>proyección de cobro LATAM</Text>
+            </View>
+            <View style={styles.kpiCard}>
+              <Text style={styles.kpiLabel}>{isMature ? 'Alcance Total' : 'Retención media'}</Text>
+              <Text style={styles.kpiValue}>{isMature ? '410.2K' : '48s'}</Text>
+              <Text style={styles.kpiSub}>usuarios alcanzados</Text>
+            </View>
+            <View style={styles.kpiCard}>
+              <Text style={styles.kpiLabel}>{isMature ? 'Regalos / Batallas' : 'Engagement'}</Text>
+              <Text style={styles.kpiValue}>{isMature ? '142 enviados' : '8.4%'}</Text>
+              <Text style={styles.kpiSub}>interacciones en vivo</Text>
+            </View>
           </View>
         </View>
 
         {/* ============================================================== */}
-        {/* TOP MONETIZED CONTENT (WHEN MATURE)                           */}
+        {/* TOP REVENUE GENERATORS (WHEN MATURE)                           */}
         {/* ============================================================== */}
         {isMature && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Videos Top en Ganancias</Text>
-            <View style={styles.videoListWrap}>
-              {TOP_MONETIZED_VIDEOS.map((item, idx) => (
-                <View key={item.id} style={styles.videoRevenueRow}>
-                  <View style={styles.rankBadge}>
-                    <Text style={styles.rankText}>#{idx + 1}</Text>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.videoRowTitle} numberOfLines={1}>{item.title}</Text>
-                    <Text style={styles.videoRowMeta}>{item.views} vistas · {item.time}</Text>
-                  </View>
-                  <View style={styles.earnedPill}>
-                    <Text style={styles.earnedText}>{item.earned}</Text>
-                  </View>
+            <Text style={styles.sectionTitle}>Fuentes Principales de Ingresos</Text>
+            <View style={styles.darkCard}>
+              <View style={styles.rankingRow}>
+                <View style={styles.rankingIconWrap}>
+                  <Ionicons name="flame" size={16} color="#D4AF37" />
                 </View>
-              ))}
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.rankingTitle}>Batalla Live vs @carlosgamer_col</Text>
+                  <Text style={styles.rankingMeta}>Ganada · 18.4K espectadores · ayer</Text>
+                </View>
+                <Text style={styles.rankingEarned}>+$32.00</Text>
+              </View>
+
+              <View style={styles.cardDivider} />
+
+              <View style={styles.rankingRow}>
+                <View style={styles.rankingIconWrap}>
+                  <Ionicons name="videocam" size={16} color="#D4AF37" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.rankingTitle}>Video: Ceviche tradicional fácil en 5 min</Text>
+                  <Text style={styles.rankingMeta}>210K reproducciones · Feed Para Ti</Text>
+                </View>
+                <Text style={styles.rankingEarned}>+$17.85</Text>
+              </View>
+
+              <View style={styles.cardDivider} />
+
+              <View style={styles.rankingRow}>
+                <View style={styles.rankingIconWrap}>
+                  <Ionicons name="gift" size={16} color="#D4AF37" />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.rankingTitle}>Transmisión en Vivo: Preguntas y Cocina</Text>
+                  <Text style={styles.rankingMeta}>76 regalos recibidos · hace 3 días</Text>
+                </View>
+                <Text style={styles.rankingEarned}>+$15.50</Text>
+              </View>
             </View>
           </View>
         )}
-
-        {/* Tips */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Buenas Prácticas para Creadores</Text>
-          {[
-            { icon: 'time-outline', tip: 'Publica entre 7-9 PM para mayor alcance en LATAM' },
-            { icon: 'videocam-outline', tip: 'Los videos de 15-30s tienen 40% más retención' },
-            { icon: 'pricetag-outline', tip: 'Usa 3-5 hashtags relevantes, evita saturar' },
-          ].map((item, i) => (
-            <View key={i} style={styles.tipRow}>
-              <View style={styles.tipIconWrap}>
-                <Ionicons name={item.icon as any} size={18} color={COLORS.subtext} />
-              </View>
-              <Text style={styles.tipText}>{item.tip}</Text>
-            </View>
-          ))}
-        </View>
 
       </ScrollView>
     </SafeAreaView>
@@ -406,333 +359,352 @@ export default function CreatorStudioScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.black },
-
+  container: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.08)',
   },
-  headerBtn: { padding: 4 },
-  title: { fontSize: FONT.size.lg, fontWeight: FONT.weight.bold, color: COLORS.white },
-
-  greeting: {
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
+  headerBtn: {
+    padding: 6,
   },
-  greetingCard: {
+  title: {
+    fontSize: FONT.size.md,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.white,
+    letterSpacing: 0.3,
+  },
+
+  // Profile Header Card
+  profileHeaderCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.md,
+    gap: 14,
+    marginHorizontal: SPACING.md,
+    marginTop: SPACING.md,
     padding: SPACING.md,
+    backgroundColor: '#111111',
     borderRadius: RADIUS.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.08)',
   },
-  greetingIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+  profileAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#1E1E1E',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.15)',
   },
-  greetingTitle: { fontSize: FONT.size.lg, fontWeight: FONT.weight.bold, color: COLORS.white },
-  greetingSubtitle: { fontSize: FONT.size.sm, color: COLORS.subtext, marginTop: 2 },
+  profileAvatarText: {
+    fontSize: 20,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.white,
+  },
+  profileNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  profileName: {
+    fontSize: FONT.size.md,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.white,
+  },
+  verifiedPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: 'rgba(212,175,55,0.15)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 0.5,
+    borderColor: 'rgba(212,175,55,0.3)',
+  },
+  verifiedPillText: {
+    fontSize: 9,
+    fontWeight: FONT.weight.bold,
+    color: '#D4AF37',
+  },
+  profileCategory: {
+    fontSize: FONT.size.xs,
+    color: COLORS.subtext,
+    marginTop: 2,
+  },
+  profileStatus: {
+    fontSize: FONT.size.xs,
+    color: '#D4AF37',
+    marginTop: 3,
+  },
 
   section: {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.lg,
   },
-  sectionHeader: {
-    marginBottom: SPACING.sm,
-  },
   sectionTitle: {
-    fontSize: FONT.size.md,
-    fontWeight: FONT.weight.bold,
-    color: COLORS.white,
-    letterSpacing: 0.2,
-  },
-  sectionSubtitle: {
-    fontSize: FONT.size.xs,
+    fontSize: 13,
+    fontWeight: FONT.weight.semibold,
     color: COLORS.subtext,
-    marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginBottom: 8,
   },
 
-  // Wallet hero (mature)
-  walletHeroCard: {
-    borderRadius: RADIUS.lg,
-    overflow: 'hidden',
+  // Dark Card
+  darkCard: {
+    backgroundColor: '#111111',
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,215,0,0.3)',
+    borderColor: 'rgba(255,255,255,0.08)',
   },
-  walletHeroGradient: {
-    padding: SPACING.lg,
+  cardDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    marginVertical: 10,
   },
-  liveBadgeRow: {
+
+  // Wallet Hero
+  walletHeroCard: {
+    backgroundColor: '#111111',
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    borderWidth: 1,
+    borderColor: 'rgba(212,175,55,0.3)',
+  },
+  walletHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  liveIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: SPACING.xs,
   },
-  pulseDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#00E676',
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#4ADE80',
   },
-  liveBadgeText: {
+  liveText: {
     fontSize: 10,
     fontWeight: FONT.weight.bold,
-    color: '#00E676',
-    letterSpacing: 0.8,
+    color: '#4ADE80',
+    letterSpacing: 0.5,
+  },
+  walletDetailLink: {
+    fontSize: FONT.size.xs,
+    color: '#D4AF37',
+    fontWeight: FONT.weight.medium,
   },
   walletLabel: {
-    fontSize: FONT.size.sm,
+    fontSize: FONT.size.xs,
     color: COLORS.subtext,
     marginTop: 4,
   },
   walletAmount: {
-    fontSize: 36,
-    fontWeight: FONT.weight.black,
+    fontSize: 32,
+    fontWeight: FONT.weight.bold,
     color: COLORS.white,
     marginVertical: 4,
   },
   walletCurrency: {
-    fontSize: FONT.size.lg,
+    fontSize: FONT.size.md,
     fontWeight: FONT.weight.semibold,
-    color: COLORS.gold,
+    color: '#D4AF37',
   },
-  walletRateText: {
-    fontSize: FONT.size.xs,
-    color: 'rgba(255,255,255,0.6)',
-    marginBottom: SPACING.md,
+
+  // Stream Grid
+  streamGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginVertical: 12,
   },
-  btnWalletAction: {
-    borderRadius: RADIUS.md,
-    overflow: 'hidden',
+  streamItem: {
+    width: '48%',
+    backgroundColor: '#181818',
+    borderRadius: RADIUS.sm,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
   },
-  btnWalletGradient: {
+  streamLabel: {
+    fontSize: 11,
+    color: COLORS.subtext,
+    marginTop: 4,
+  },
+  streamVal: {
+    fontSize: FONT.size.sm,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.white,
+    marginTop: 2,
+  },
+
+  btnWithdrawAction: {
+    backgroundColor: '#D4AF37',
+    borderRadius: RADIUS.sm,
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    marginTop: 4,
   },
-  btnWalletActionText: {
+  btnWithdrawActionText: {
     fontSize: FONT.size.sm,
     fontWeight: FONT.weight.bold,
-    color: COLORS.black,
+    color: '#000000',
   },
 
-  // Step box
-  stepBox: {
+  // Demo Box
+  demoBox: {
+    backgroundColor: '#111111',
     borderRadius: RADIUS.md,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
-  },
-  stepBoxGradient: {
     padding: SPACING.md,
-    gap: SPACING.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
-  stepHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  stepPill: {
-    backgroundColor: 'rgba(255,215,0,0.2)',
+  demoTag: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#1C1C1C',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 6,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    marginBottom: 8,
   },
-  stepPillText: {
+  demoTagText: {
     fontSize: 10,
-    fontWeight: FONT.weight.black,
-    color: COLORS.gold,
+    fontWeight: FONT.weight.bold,
+    color: '#D4AF37',
     letterSpacing: 0.5,
   },
-  stepStatusText: {
-    fontSize: FONT.size.xs,
-    color: COLORS.subtext,
-  },
-  stepTitle: {
-    fontSize: FONT.size.md,
+  demoTitle: {
+    fontSize: FONT.size.sm,
     fontWeight: FONT.weight.bold,
     color: COLORS.white,
+    marginBottom: 4,
   },
-  stepDesc: {
+  demoDesc: {
     fontSize: FONT.size.xs,
     color: COLORS.subtext,
     lineHeight: 18,
+    marginBottom: 12,
   },
-  btnStep1: {
+  btnSimulateAction: {
+    backgroundColor: '#D4AF37',
     borderRadius: RADIUS.sm,
-    overflow: 'hidden',
-    marginTop: 4,
-  },
-  btnStep2: {
-    borderRadius: RADIUS.sm,
-    overflow: 'hidden',
-    marginTop: 4,
-  },
-  btnStepGradient: {
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
   },
-  btnStep1Text: {
+  btnSimulateActionText: {
     fontSize: FONT.size.sm,
     fontWeight: FONT.weight.bold,
-    color: COLORS.white,
-  },
-  btnStep2Text: {
-    fontSize: FONT.size.sm,
-    fontWeight: FONT.weight.bold,
-    color: COLORS.black,
+    color: '#000000',
   },
 
-  // Progress card
-  progressCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: SPACING.md,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: COLORS.border,
-  },
-  btnWrapper: { marginTop: 4 },
-  btnUnlocked: {
-    borderRadius: RADIUS.md,
-    overflow: 'hidden',
-  },
-  btnGradient: {
+  // Activation & Locked
+  btnActivate: {
+    backgroundColor: '#D4AF37',
+    borderRadius: RADIUS.sm,
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
   },
-  btnUnlockedText: {
-    fontSize: FONT.size.md,
+  btnActivateText: {
+    fontSize: FONT.size.sm,
     fontWeight: FONT.weight.bold,
-    color: COLORS.black,
+    color: '#000000',
   },
   btnLocked: {
-    backgroundColor: COLORS.card,
-    borderRadius: RADIUS.md,
-    paddingVertical: 14,
+    backgroundColor: '#181818',
+    borderRadius: RADIUS.sm,
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: 'rgba(255,255,255,0.05)',
   },
   btnLockedText: {
-    fontSize: FONT.size.xs,
-    fontWeight: FONT.weight.medium,
+    fontSize: 11,
     color: COLORS.muted,
   },
 
-  // Stats Grid
-  statsGrid: {
+  // KPI Grid
+  kpiGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: SPACING.sm,
-    marginTop: SPACING.sm,
+    gap: 8,
   },
-  statCard: {
-    width: '48%',
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.md,
-    padding: SPACING.md,
+  kpiCard: {
+    width: '48.5%',
+    backgroundColor: '#111111',
+    borderRadius: RADIUS.sm,
+    padding: 12,
     borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: 4,
+    borderColor: 'rgba(255,255,255,0.06)',
   },
-  statValue: { fontSize: FONT.size.xl, fontWeight: FONT.weight.black },
-  statLabel: { fontSize: FONT.size.xs, color: COLORS.subtext },
+  kpiLabel: {
+    fontSize: 11,
+    color: COLORS.subtext,
+  },
+  kpiValue: {
+    fontSize: 17,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.white,
+    marginVertical: 4,
+  },
+  kpiSub: {
+    fontSize: 10,
+    color: COLORS.muted,
+  },
 
-  // Top videos list
-  videoListWrap: {
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    overflow: 'hidden',
-    marginTop: SPACING.sm,
-  },
-  videoRevenueRow: {
+  // Ranking Rows
+  rankingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: SPACING.sm,
-    padding: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+    gap: 12,
+    paddingVertical: 4,
   },
-  rankBadge: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: 'rgba(255,215,0,0.15)',
+  rankingIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#1A1A1A',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rankText: {
-    fontSize: 11,
-    fontWeight: FONT.weight.bold,
-    color: COLORS.gold,
-  },
-  videoRowTitle: {
-    fontSize: FONT.size.sm,
+  rankingTitle: {
+    fontSize: FONT.size.xs,
     fontWeight: FONT.weight.semibold,
     color: COLORS.white,
   },
-  videoRowMeta: {
-    fontSize: FONT.size.xs,
+  rankingMeta: {
+    fontSize: 11,
     color: COLORS.subtext,
     marginTop: 2,
   },
-  earnedPill: {
-    backgroundColor: 'rgba(0,230,118,0.15)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  earnedText: {
+  rankingEarned: {
     fontSize: FONT.size.xs,
     fontWeight: FONT.weight.bold,
-    color: '#00E676',
-  },
-
-  // Tips
-  tipRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border + '55',
-  },
-  tipIconWrap: {
-    width: 34, height: 34, borderRadius: 17,
-    backgroundColor: COLORS.surface,
-    alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: COLORS.border,
-  },
-  tipText: {
-    flex: 1,
-    fontSize: FONT.size.sm,
-    color: COLORS.subtext,
-    lineHeight: 19,
-    paddingTop: 2,
+    color: '#4ADE80',
   },
 });
