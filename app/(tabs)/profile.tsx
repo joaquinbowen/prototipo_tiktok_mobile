@@ -1,29 +1,40 @@
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, ScrollView, FlatList, Dimensions,
+  SafeAreaView, ScrollView, Dimensions,
 } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from '@/components/LinearGradient';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
 import { MY_PROFILE, VIDEOS } from '@/data/mocks';
+import { useMonetization } from '@/context/MonetizationContext';
 
 const { width } = Dimensions.get('window');
-const GRID_ITEM = (width - SPACING.md * 2 - 4) / 3;
+// Full edge-to-edge 3-column calculation with 1px gap
+const GRID_ITEM_WIDTH = Math.floor((width - 2) / 3);
+const GRID_ITEM_HEIGHT = Math.floor(GRID_ITEM_WIDTH * 1.35);
 
 export default function ProfileScreen() {
+  const { isPaid, balance } = useMonetization();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
 
         {/* Header row */}
         <View style={styles.headerRow}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Text style={styles.headerIcon}>‹</Text>
+          <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+            <Ionicons name="chevron-back" size={26} color={COLORS.white} />
           </TouchableOpacity>
-          <Text style={styles.headerUsername}>{MY_PROFILE.username}</Text>
-          <TouchableOpacity>
-            <Text style={styles.headerIcon}>⋯</Text>
+          <View style={styles.usernameWrap}>
+            <Text style={styles.headerUsername}>{MY_PROFILE.username}</Text>
+            {isPaid && (
+              <Ionicons name="checkmark-circle" size={16} color={COLORS.gold} style={{ marginLeft: 4 }} />
+            )}
+          </View>
+          <TouchableOpacity style={styles.headerBtn}>
+            <Ionicons name="ellipsis-horizontal" size={22} color={COLORS.white} />
           </TouchableOpacity>
         </View>
 
@@ -58,7 +69,14 @@ export default function ProfileScreen() {
 
         {/* Name + bio */}
         <View style={styles.bioSection}>
-          <Text style={styles.name}>{MY_PROFILE.name}</Text>
+          <View style={styles.nameRow}>
+            <Text style={styles.name}>{MY_PROFILE.name}</Text>
+            {isPaid && (
+              <View style={styles.badgeMonetized}>
+                <Text style={styles.badgeText}>⭐ CREADOR PRO</Text>
+              </View>
+            )}
+          </View>
           <Text style={styles.bio}>{MY_PROFILE.bio}</Text>
         </View>
 
@@ -72,27 +90,36 @@ export default function ProfileScreen() {
             onPress={() => router.push('/creator-studio')}
             activeOpacity={0.85}
           >
-            <Text style={styles.btnPrimaryText}>⚡ Creator Studio</Text>
+            <Ionicons name="flash" size={16} color={COLORS.white} style={{ marginRight: 6 }} />
+            <Text style={styles.btnPrimaryText}>Creator Studio</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnIcon}>
-            <Text style={styles.btnIconText}>⊕</Text>
-          </TouchableOpacity>
+          {isPaid && (
+            <TouchableOpacity
+              style={styles.btnWallet}
+              onPress={() => router.push('/wallet')}
+              activeOpacity={0.85}
+            >
+              <Ionicons name="wallet-outline" size={16} color={COLORS.gold} style={{ marginRight: 4 }} />
+              <Text style={styles.btnWalletText}>${balance.toFixed(2)}</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
-        {/* Video grid */}
+        {/* Video grid header */}
         <View style={styles.gridHeader}>
           <TouchableOpacity style={styles.gridTab}>
-            <Text style={styles.gridTabIconActive}>⊞</Text>
+            <Ionicons name="grid" size={20} color={COLORS.white} />
             <View style={styles.gridTabUnderline} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.gridTab}>
-            <Text style={styles.gridTabIcon}>♥</Text>
+            <Ionicons name="heart-outline" size={22} color={COLORS.muted} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.gridTab}>
-            <Text style={styles.gridTabIcon}>🔒</Text>
+            <Ionicons name="lock-closed-outline" size={20} color={COLORS.muted} />
           </TouchableOpacity>
         </View>
 
+        {/* Video grid - 100% full width edge-to-edge */}
         <View style={styles.videoGrid}>
           {[...VIDEOS, ...VIDEOS.slice(0, 4)].map((v, i) => (
             <TouchableOpacity key={`${v.id}-${i}`} style={styles.videoThumb} activeOpacity={0.85}>
@@ -102,10 +129,11 @@ export default function ProfileScreen() {
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
               >
-                <Text style={styles.videoPlay}>▶</Text>
+                <Ionicons name="play" size={22} color="rgba(255,255,255,0.6)" />
               </LinearGradient>
               <View style={styles.videoMeta}>
-                <Text style={styles.videoViews}>♥ {(v.likes / 1000).toFixed(0)}K</Text>
+                <Ionicons name="heart" size={11} color={COLORS.white} style={{ marginRight: 2 }} />
+                <Text style={styles.videoViews}>{(v.likes / 1000).toFixed(0)}K</Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -127,12 +155,16 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.sm,
     paddingBottom: SPACING.sm,
   },
-  headerIcon: { fontSize: 28, color: COLORS.white, lineHeight: 32, padding: 4 },
+  headerBtn: { padding: 4 },
+  usernameWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   headerUsername: { fontSize: FONT.size.lg, fontWeight: FONT.weight.bold, color: COLORS.white },
 
   profileSection: {
     alignItems: 'center',
-    paddingTop: SPACING.lg,
+    paddingTop: SPACING.md,
     paddingBottom: SPACING.md,
     gap: SPACING.lg,
   },
@@ -159,7 +191,26 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
     marginBottom: SPACING.md,
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   name: { fontSize: FONT.size.lg, fontWeight: FONT.weight.bold, color: COLORS.white },
+  badgeMonetized: {
+    backgroundColor: 'rgba(255,215,0,0.15)',
+    borderColor: 'rgba(255,215,0,0.4)',
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontWeight: FONT.weight.bold,
+    color: COLORS.gold,
+    letterSpacing: 0.5,
+  },
   bio: { fontSize: FONT.size.sm, color: COLORS.subtext, textAlign: 'center', lineHeight: 19 },
 
   actionsRow: {
@@ -178,22 +229,27 @@ const styles = StyleSheet.create({
   },
   btnSecondaryText: { fontSize: FONT.size.sm, fontWeight: FONT.weight.semibold, color: COLORS.white },
   btnPrimary: {
-    flex: 1.4,
+    flex: 1.3,
     paddingVertical: 10,
     borderRadius: RADIUS.sm,
     backgroundColor: COLORS.primary,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   btnPrimaryText: { fontSize: FONT.size.sm, fontWeight: FONT.weight.bold, color: COLORS.white },
-  btnIcon: {
-    width: 40,
+  btnWallet: {
+    paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: RADIUS.sm,
-    borderWidth: 1.5,
-    borderColor: COLORS.border,
+    backgroundColor: '#1C1605',
+    borderWidth: 1,
+    borderColor: 'rgba(255,215,0,0.3)',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  btnIconText: { fontSize: 18, color: COLORS.white },
+  btnWalletText: { fontSize: FONT.size.sm, fontWeight: FONT.weight.bold, color: COLORS.gold },
 
   gridHeader: {
     flexDirection: 'row',
@@ -205,14 +261,12 @@ const styles = StyleSheet.create({
   gridTab: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: SPACING.sm,
+    paddingVertical: 10,
     position: 'relative',
   },
-  gridTabIconActive: { fontSize: 22, color: COLORS.white },
-  gridTabIcon: { fontSize: 22, color: COLORS.muted },
   gridTabUnderline: {
     position: 'absolute',
-    bottom: 0, left: '20%', right: '20%',
+    bottom: 0, left: '25%', right: '25%',
     height: 2,
     backgroundColor: COLORS.white,
   },
@@ -220,12 +274,14 @@ const styles = StyleSheet.create({
   videoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 2,
-    padding: 1,
+    gap: 1,
+    padding: 0,
+    margin: 0,
+    width: '100%',
   },
   videoThumb: {
-    width: GRID_ITEM,
-    height: GRID_ITEM * 1.4,
+    width: GRID_ITEM_WIDTH,
+    height: GRID_ITEM_HEIGHT,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -234,10 +290,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  videoPlay: { fontSize: 20, color: 'rgba(255,255,255,0.5)' },
   videoMeta: {
     position: 'absolute',
     bottom: 4, left: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   videoViews: { fontSize: FONT.size.xs, color: COLORS.white, fontWeight: FONT.weight.semibold },
 });
