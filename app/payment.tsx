@@ -120,7 +120,7 @@ function CryptoForm({ onPay }: { onPay: () => void }) {
                   styles.qrCell,
                   // Corner markers + random inner pattern
                   (i < 7 || (i >= 14 && i < 21 && i % 7 < 3) ||
-                   (i >= 42) || Math.random() > 0.55) && styles.qrCellFilled,
+                    (i >= 42) || Math.random() > 0.55) && styles.qrCellFilled,
                 ]}
               />
             ))}
@@ -169,7 +169,7 @@ function SuccessView({ method, onContinue }: { method: Tab; onContinue: () => vo
           : 'Tu pago en USDT fue verificado por Binance Pay.'}
       </Text>
       <Text style={styles.successSub2}>
-        Bienvenido al programa de creadores de ClearMinds 🎉
+        Bienvenido al programa de creadores de Viraly 🎉
       </Text>
       <TouchableOpacity style={styles.continueBtn} onPress={onContinue} activeOpacity={0.85}>
         <LinearGradient

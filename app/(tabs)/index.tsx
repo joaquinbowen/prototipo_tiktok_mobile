@@ -29,7 +29,7 @@ export default function FeedScreen() {
     []
   );
 
-  const viewabilityConfig = useRef({ itemVisibilityPercentThreshold: 60 });
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 });
 
   function handleLike(videoId: string) {
     const wasLiked = liked[videoId] ?? false;

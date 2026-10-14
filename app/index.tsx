@@ -19,10 +19,7 @@ export default function WelcomeScreen() {
       <View style={styles.logoArea}>
         {/* Wordmark */}
         <View style={styles.wordmark}>
-          <Text style={styles.logoLetterC}>C</Text>
-          <Text style={styles.logoText}>lear</Text>
-          <Text style={styles.logoLetterM}>M</Text>
-          <Text style={styles.logoText}>inds</Text>
+          <Text style={styles.logoText}>Viraly</Text>
         </View>
         <Text style={styles.tagline}>Crea. Crece. Cobra.</Text>
         <Text style={styles.subtitle}>
@@ -102,18 +99,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'baseline',
     marginBottom: SPACING.md,
-  },
-  logoLetterC: {
-    fontSize: 52,
-    fontWeight: FONT.weight.black,
-    color: COLORS.primary,
-    letterSpacing: -1,
-  },
-  logoLetterM: {
-    fontSize: 52,
-    fontWeight: FONT.weight.black,
-    color: COLORS.accent,
-    letterSpacing: -1,
   },
   logoText: {
     fontSize: 52,

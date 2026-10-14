@@ -1,4 +1,4 @@
-# ClearMinds Mobile — App de Creadores
+# Viraly Mobile — App de Creadores
 
 App móvil de red social de videos cortos con monetización para creadores en LATAM. Prototipo demo navegable con todos los flujos simulados.
 

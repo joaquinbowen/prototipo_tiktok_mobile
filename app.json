@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "ClearMinds",
-    "slug": "clearminds",
+    "name": "Viraly",
+    "slug": "viraly",
     "version": "1.0.0",
-    "scheme": "clearminds",
+    "scheme": "viraly",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -14,13 +14,13 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.clearminds.app"
+      "bundleIdentifier": "com.viraly.app"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#000000"
       },
-      "package": "com.clearminds.app"
+      "package": "com.viraly.app"
     },
     "web": {
       "bundler": "metro"
