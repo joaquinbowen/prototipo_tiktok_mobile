@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import {
   View, FlatList, Dimensions, StyleSheet, Text,
-  TouchableOpacity, ViewToken,
+  TouchableOpacity, ViewToken, LayoutChangeEvent,
 } from 'react-native';
 import { VideoCard } from '@/components/VideoCard';
 import { VideoSidebar } from '@/components/VideoSidebar';
@@ -9,10 +9,11 @@ import { VIDEOS } from '@/data/mocks';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING } from '@/constants/layout';
 
-const { height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 type TabType = 'paraти' | 'siguiendo';
 
 export default function FeedScreen() {
+  const [containerHeight, setContainerHeight] = useState<number>(0);
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<TabType>('paraти');
   const [likes, setLikes] = useState<Record<string, number>>(
@@ -40,8 +41,15 @@ export default function FeedScreen() {
     }));
   }
 
+  const handleLayout = (e: LayoutChangeEvent) => {
+    const { height: h } = e.nativeEvent.layout;
+    if (h > 0 && h !== containerHeight) {
+      setContainerHeight(h);
+    }
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={handleLayout}>
       {/* Feed tabs */}
       <View style={styles.tabsRow}>
         <TouchableOpacity onPress={() => setActiveTab('siguiendo')} activeOpacity={0.8}>
@@ -58,39 +66,42 @@ export default function FeedScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Video list */}
-      <FlatList
-        data={VIDEOS}
-        keyExtractor={item => item.id}
-        renderItem={({ item, index }) => (
-          <View style={{ width: Dimensions.get('window').width, height }}>
-            <VideoCard video={item} isActive={index === activeIndex} />
-            <VideoSidebar
-              likes={likes[item.id] ?? item.likes}
-              comments={item.comments}
-              shares={item.shares}
-              saves={item.saves}
-              isLiked={liked[item.id] ?? false}
-              onLike={() => handleLike(item.id)}
-              authorAvatarColor={item.avatar}
-            />
-          </View>
-        )}
-        pagingEnabled
-        showsVerticalScrollIndicator={false}
-        snapToAlignment="start"
-        decelerationRate="fast"
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig.current}
-        getItemLayout={(_, index) => ({
-          length: height,
-          offset: height * index,
-          index,
-        })}
-        initialNumToRender={2}
-        maxToRenderPerBatch={3}
-        windowSize={3}
-      />
+      {/* Video list with exact viewport height calibration */}
+      {containerHeight > 0 && (
+        <FlatList
+          data={VIDEOS}
+          keyExtractor={item => item.id}
+          renderItem={({ item, index }) => (
+            <View style={{ width, height: containerHeight, overflow: 'hidden' }}>
+              <VideoCard video={item} isActive={index === activeIndex} cardHeight={containerHeight} />
+              <VideoSidebar
+                likes={likes[item.id] ?? item.likes}
+                comments={item.comments}
+                shares={item.shares}
+                saves={item.saves}
+                isLiked={liked[item.id] ?? false}
+                onLike={() => handleLike(item.id)}
+                authorAvatarColor={item.avatar}
+              />
+            </View>
+          )}
+          pagingEnabled
+          showsVerticalScrollIndicator={false}
+          snapToInterval={containerHeight}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig.current}
+          getItemLayout={(_, index) => ({
+            length: containerHeight,
+            offset: containerHeight * index,
+            index,
+          })}
+          initialNumToRender={2}
+          maxToRenderPerBatch={3}
+          windowSize={3}
+        />
+      )}
     </View>
   );
 }
@@ -99,10 +110,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.black,
+    overflow: 'hidden',
   },
   tabsRow: {
     position: 'absolute',
-    top: 56,
+    top: 48,
     left: 0,
     right: 0,
     zIndex: 10,
@@ -123,8 +135,8 @@ const styles = StyleSheet.create({
   tabIndicator: {
     position: 'absolute',
     bottom: 0,
-    left: '25%',
-    right: '25%',
+    left: '20%',
+    right: '20%',
     height: 2,
     borderRadius: 1,
     backgroundColor: COLORS.white,

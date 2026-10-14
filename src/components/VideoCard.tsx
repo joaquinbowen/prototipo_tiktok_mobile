@@ -1,20 +1,23 @@
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from '@/components/LinearGradient';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING } from '@/constants/layout';
 import type { Video } from '@/data/mocks';
 
-const { width, height } = Dimensions.get('window');
-const CARD_HEIGHT = height;
+const { width, height: defaultHeight } = Dimensions.get('window');
 
 type Props = {
   video: Video;
   isActive: boolean;
+  cardHeight?: number;
 };
 
-export function VideoCard({ video, isActive }: Props) {
+export function VideoCard({ video, isActive, cardHeight }: Props) {
+  const currentHeight = cardHeight ?? defaultHeight;
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { height: currentHeight }]}>
       {/* Simulated video background */}
       <LinearGradient
         colors={[video.gradientColors[0] + '99', video.gradientColors[1] + 'CC', '#000000']}
@@ -27,7 +30,7 @@ export function VideoCard({ video, isActive }: Props) {
       {isActive && (
         <View style={styles.playArea} pointerEvents="none">
           <View style={styles.playRing}>
-            <Text style={styles.playIcon}>▶</Text>
+            <Ionicons name="play" size={26} color={COLORS.white} style={{ marginLeft: 3 }} />
           </View>
         </View>
       )}
@@ -68,7 +71,7 @@ export function VideoCard({ video, isActive }: Props) {
 
         {/* Music */}
         <View style={styles.musicRow}>
-          <Text style={styles.musicNote}>♪</Text>
+          <Ionicons name="musical-notes" size={14} color={COLORS.white} />
           <Text style={styles.musicName} numberOfLines={1}>{video.musicName}</Text>
         </View>
       </LinearGradient>
@@ -79,32 +82,28 @@ export function VideoCard({ video, isActive }: Props) {
 const styles = StyleSheet.create({
   container: {
     width,
-    height: CARD_HEIGHT,
     backgroundColor: COLORS.black,
+    position: 'relative',
+    overflow: 'hidden',
   },
   gradient: {
-    ...StyleSheet.absoluteFillObject,
+    ...(StyleSheet.absoluteFill as any),
   },
   playArea: {
-    ...StyleSheet.absoluteFillObject,
+    ...(StyleSheet.absoluteFill as any),
     alignItems: 'center',
     justifyContent: 'center',
-    bottom: 200,
+    bottom: 80,
   },
   playRing: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.4)',
-  },
-  playIcon: {
-    fontSize: 28,
-    color: COLORS.white,
-    marginLeft: 4,
   },
   bottomOverlay: {
     position: 'absolute',
@@ -112,9 +111,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: SPACING.md,
-    paddingBottom: 80, // above tab bar
+    paddingBottom: 24,
     paddingTop: 60,
-    gap: SPACING.sm,
+    gap: SPACING.xs,
   },
   authorRow: {
     flexDirection: 'row',
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.white,
     borderRadius: 6,
     paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingVertical: 4,
   },
   followText: {
     fontSize: FONT.size.sm,
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: FONT.size.md,
     color: COLORS.white,
-    lineHeight: 21,
+    lineHeight: 20,
   },
   hashtagRow: {
     flexDirection: 'row',
@@ -179,11 +178,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.xs,
-    marginTop: SPACING.xs,
-  },
-  musicNote: {
-    fontSize: FONT.size.md,
-    color: COLORS.white,
+    marginTop: 2,
   },
   musicName: {
     fontSize: FONT.size.sm,
