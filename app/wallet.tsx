@@ -4,7 +4,8 @@ import {
   SafeAreaView, ScrollView, Animated,
 } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from '@/components/LinearGradient';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
 import { useMonetization } from '@/context/MonetizationContext';
@@ -48,7 +49,7 @@ export default function WalletScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backIcon}>‹</Text>
+          <Ionicons name="chevron-back" size={26} color={COLORS.white} />
         </TouchableOpacity>
         <Text style={styles.title}>Mi Billetera</Text>
         <View style={{ width: 40 }} />
@@ -98,12 +99,12 @@ export default function WalletScreen() {
         {/* Stats row */}
         <View style={styles.statsRow}>
           {[
-            { label: 'Este mes', value: '$14.50', icon: '📅' },
-            { label: 'Total ganado', value: '$31.20', icon: '💰' },
-            { label: 'Retiros', value: '$16.70', icon: '↗' },
+            { label: 'Este mes', value: '$14.50', icon: 'calendar-outline' },
+            { label: 'Total ganado', value: '$31.20', icon: 'cash-outline' },
+            { label: 'Retiros', value: '$16.70', icon: 'arrow-up-circle-outline' },
           ].map(s => (
             <View key={s.label} style={styles.statCard}>
-              <Text style={styles.statIcon}>{s.icon}</Text>
+              <Ionicons name={s.icon as any} size={22} color={COLORS.gold} />
               <Text style={styles.statValue}>{s.value}</Text>
               <Text style={styles.statLabel}>{s.label}</Text>
             </View>
@@ -117,7 +118,7 @@ export default function WalletScreen() {
             {RECENT_TXNS.map(txn => (
               <View key={txn.id} style={styles.txnRow}>
                 <View style={styles.txnIconWrap}>
-                  <Text style={styles.txnIcon}>👁</Text>
+                  <Ionicons name="play" size={14} color={COLORS.white} />
                 </View>
                 <View style={styles.txnInfo}>
                   <Text style={styles.txnDesc}>{txn.desc}</Text>

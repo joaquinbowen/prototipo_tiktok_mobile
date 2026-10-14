@@ -4,7 +4,8 @@ import {
   SafeAreaView, ScrollView, ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from '@/components/LinearGradient';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING, RADIUS } from '@/constants/layout';
 import { ConfettiEffect } from '@/components/ConfettiEffect';
@@ -200,7 +201,7 @@ export default function PaymentScreen() {
   }
 
   function handleContinue() {
-    router.replace('/wallet');
+    router.replace('/creator-studio');
   }
 
   if (stage === 'success') {
@@ -216,7 +217,7 @@ export default function PaymentScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backIcon}>‹</Text>
+          <Ionicons name="chevron-back" size={26} color={COLORS.white} />
         </TouchableOpacity>
         <Text style={styles.title}>Activar Monetización</Text>
         <View style={{ width: 40 }} />
