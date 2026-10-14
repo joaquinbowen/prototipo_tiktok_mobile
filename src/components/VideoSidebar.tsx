@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
 import { FONT, SPACING } from '@/constants/layout';
 
@@ -28,15 +29,17 @@ export function VideoSidebar({
       <View style={styles.avatarWrapper}>
         <View style={[styles.sideAvatar, { backgroundColor: authorAvatarColor }]} />
         <View style={styles.followDot}>
-          <Text style={styles.followDotText}>+</Text>
+          <Ionicons name="add" size={14} color={COLORS.white} />
         </View>
       </View>
 
       {/* Like */}
-      <TouchableOpacity style={styles.action} onPress={onLike} activeOpacity={0.7}>
-        <Text style={[styles.actionIcon, isLiked && styles.actionIconLiked]}>
-          {isLiked ? '♥' : '♡'}
-        </Text>
+      <TouchableOpacity style={styles.action} onPress={onLike} activeOpacity={0.75}>
+        <Ionicons
+          name={isLiked ? "heart" : "heart-outline"}
+          size={34}
+          color={isLiked ? COLORS.primary : COLORS.white}
+        />
         <Text style={styles.actionCount}>{formatCount(likes)}</Text>
       </TouchableOpacity>
 
@@ -44,9 +47,9 @@ export function VideoSidebar({
       <TouchableOpacity
         style={styles.action}
         onPress={() => Alert.alert('Comentarios', 'Los comentarios estarán disponibles en la versión final.')}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
-        <Text style={styles.actionIcon}>💬</Text>
+        <Ionicons name="chatbubble-ellipses" size={30} color={COLORS.white} />
         <Text style={styles.actionCount}>{formatCount(comments)}</Text>
       </TouchableOpacity>
 
@@ -54,9 +57,9 @@ export function VideoSidebar({
       <TouchableOpacity
         style={styles.action}
         onPress={() => Alert.alert('Guardado', '¡Video guardado en tu colección!')}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
-        <Text style={styles.actionIcon}>🔖</Text>
+        <Ionicons name="bookmark" size={28} color={COLORS.white} />
         <Text style={styles.actionCount}>{formatCount(saves)}</Text>
       </TouchableOpacity>
 
@@ -64,15 +67,15 @@ export function VideoSidebar({
       <TouchableOpacity
         style={styles.action}
         onPress={() => Alert.alert('Compartir', 'Función de compartir disponible en la versión final.')}
-        activeOpacity={0.7}
+        activeOpacity={0.75}
       >
-        <Text style={styles.actionIcon}>↗</Text>
+        <Ionicons name="arrow-redo" size={30} color={COLORS.white} />
         <Text style={styles.actionCount}>{formatCount(shares)}</Text>
       </TouchableOpacity>
 
       {/* Music disc */}
       <View style={styles.disc}>
-        <Text style={styles.discNote}>♪</Text>
+        <Ionicons name="musical-notes" size={16} color={COLORS.white} />
       </View>
     </View>
   );
@@ -82,12 +85,13 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     right: SPACING.md,
-    bottom: 100,
+    bottom: 24,
     alignItems: 'center',
-    gap: SPACING.lg,
+    gap: SPACING.md,
   },
   avatarWrapper: {
     position: 'relative',
+    marginBottom: 4,
   },
   sideAvatar: {
     width: 46,
@@ -98,7 +102,7 @@ const styles = StyleSheet.create({
   },
   followDot: {
     position: 'absolute',
-    bottom: -8,
+    bottom: -6,
     alignSelf: 'center',
     width: 20,
     height: 20,
@@ -109,40 +113,27 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.black,
   },
-  followDotText: {
-    fontSize: 12,
-    fontWeight: FONT.weight.bold,
-    color: COLORS.white,
-    lineHeight: 16,
-  },
   action: {
     alignItems: 'center',
     gap: 2,
   },
-  actionIcon: {
-    fontSize: 30,
-    color: COLORS.white,
-  },
-  actionIconLiked: {
-    color: COLORS.primary,
-  },
   actionCount: {
     fontSize: FONT.size.xs,
-    fontWeight: FONT.weight.semibold,
+    fontWeight: FONT.weight.bold,
     color: COLORS.white,
+    textShadowColor: 'rgba(0,0,0,0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   disc: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.surface,
-    borderWidth: 3,
-    borderColor: COLORS.border,
+    backgroundColor: 'rgba(20,20,20,0.9)',
+    borderWidth: 2.5,
+    borderColor: 'rgba(255,255,255,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  discNote: {
-    fontSize: 16,
-    color: COLORS.white,
+    marginTop: 4,
   },
 });

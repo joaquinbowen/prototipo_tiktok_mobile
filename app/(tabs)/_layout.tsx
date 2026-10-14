@@ -1,62 +1,47 @@
 import { Tabs } from 'expo-router';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '@/constants/colors';
-import { FONT } from '@/constants/layout';
 
-// Simple SVG-like icons using unicode/text
 function HomeIcon({ active }: { active: boolean }) {
-  return <Text style={[tabStyles.icon, active && tabStyles.iconActive]}>⌂</Text>;
+  return <Ionicons name={active ? 'home' : 'home-outline'} size={24} color={active ? COLORS.white : COLORS.subtext} />;
 }
 function SearchIcon({ active }: { active: boolean }) {
-  return <Text style={[tabStyles.icon, active && tabStyles.iconActive]}>⊕</Text>;
+  return <Ionicons name={active ? 'compass' : 'compass-outline'} size={25} color={active ? COLORS.white : COLORS.subtext} />;
 }
 function InboxIcon({ active }: { active: boolean }) {
-  return <Text style={[tabStyles.icon, active && tabStyles.iconActive]}>◎</Text>;
+  return <Ionicons name={active ? 'notifications' : 'notifications-outline'} size={24} color={active ? COLORS.white : COLORS.subtext} />;
 }
 function ProfileIcon({ active }: { active: boolean }) {
-  return <Text style={[tabStyles.icon, active && tabStyles.iconActive]}>◉</Text>;
+  return <Ionicons name={active ? 'person' : 'person-outline'} size={24} color={active ? COLORS.white : COLORS.subtext} />;
 }
 
 function CreateButton() {
   return (
     <View style={tabStyles.createWrapper}>
       <View style={tabStyles.createBtn}>
-        <Text style={tabStyles.createIcon}>+</Text>
+        <Ionicons name="add" size={24} color={COLORS.black} />
       </View>
     </View>
   );
 }
 
 const tabStyles = StyleSheet.create({
-  icon: {
-    fontSize: 22,
-    color: COLORS.subtext,
-  },
-  iconActive: {
-    color: COLORS.white,
-  },
   createWrapper: {
-    top: -8,
+    top: -4,
     alignItems: 'center',
   },
   createBtn: {
-    width: 48,
-    height: 34,
-    borderRadius: 10,
+    width: 44,
+    height: 32,
+    borderRadius: 9,
     backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: COLORS.white,
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  createIcon: {
-    fontSize: 26,
-    fontWeight: '300',
-    color: COLORS.black,
-    lineHeight: 30,
-    marginTop: -2,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 1 },
   },
 });
 
@@ -66,12 +51,12 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: COLORS.black,
-          borderTopColor: COLORS.border,
+          backgroundColor: '#000000',
+          borderTopColor: 'rgba(255,255,255,0.12)',
           borderTopWidth: 0.5,
-          height: 64,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: 60,
+          paddingBottom: 6,
+          paddingTop: 6,
         },
         tabBarActiveTintColor: COLORS.white,
         tabBarInactiveTintColor: COLORS.subtext,
