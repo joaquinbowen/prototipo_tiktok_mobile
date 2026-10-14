@@ -1,27 +1,47 @@
-import React, { createContext, useContext, useState, useRef } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+
+export type MonetizationStage = 'initial' | 'goals_met' | 'paid_fresh' | 'monetized_mature';
 
 type MonetizationContextType = {
+  stage: MonetizationStage;
   goalsCompleted: boolean;
-  simulateGoalsComplete: () => void;
   isPaid: boolean;
-  setPaid: () => void;
+  isMature: boolean;
   balance: number;
+  simulateGoalsComplete: () => void;
+  setPaid: () => void;
+  simulateMatureTrajectory: () => void;
+  resetDemo: () => void;
   incrementBalance: () => void;
 };
 
 const MonetizationContext = createContext<MonetizationContextType | null>(null);
 
 export function MonetizationProvider({ children }: { children: React.ReactNode }) {
-  const [goalsCompleted, setGoalsCompleted] = useState(false);
-  const [isPaid, setIsPaid] = useState(false);
-  const [balance, setBalance] = useState(14.50);
+  const [stage, setStage] = useState<MonetizationStage>('initial');
+  const [balance, setBalance] = useState(0.00);
+
+  const goalsCompleted = stage !== 'initial';
+  const isPaid = stage === 'paid_fresh' || stage === 'monetized_mature';
+  const isMature = stage === 'monetized_mature';
 
   function simulateGoalsComplete() {
-    setGoalsCompleted(true);
+    setStage('goals_met');
   }
 
   function setPaid() {
-    setIsPaid(true);
+    setStage('paid_fresh');
+    setBalance(1.20);
+  }
+
+  function simulateMatureTrajectory() {
+    setStage('monetized_mature');
+    setBalance(14.50);
+  }
+
+  function resetDemo() {
+    setStage('initial');
+    setBalance(0.00);
   }
 
   function incrementBalance() {
@@ -30,11 +50,15 @@ export function MonetizationProvider({ children }: { children: React.ReactNode }
 
   return (
     <MonetizationContext.Provider value={{
+      stage,
       goalsCompleted,
-      simulateGoalsComplete,
       isPaid,
-      setPaid,
+      isMature,
       balance,
+      simulateGoalsComplete,
+      setPaid,
+      simulateMatureTrajectory,
+      resetDemo,
       incrementBalance,
     }}>
       {children}
